@@ -1,0 +1,6 @@
+no align 5*10 163.9 2.0756E5 sigma2=2 avg=3.3840E4
+no align 10*20 18.29 1.03E4 sigma2=20 avg=1.628E3
+no align 10*20 4.3 7.16E3 sigma2=2 avg=1.289E3
+align 10*20 34 6.01E3 sigma2=20 avg=666.9
+align 5*10 9.9 5.2545E3 sigma2=2 avg=824
+align 10*20 sigma2=20 too many loops, cannot get metric learing result

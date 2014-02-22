@@ -1,0 +1,23 @@
+%SSD template matching. Input template image, matching image, output is matching position. [y,x] 
+function [MatchingPosition] = SSDTemplateMaching(TemplateImage,QueryImage)
+[TemplateHeight,TemplateWidth]=size(TemplateImage);
+[QueryImageHeight,QueryImageWidth]=size(QueryImage);
+for i=1:QueryImageHeight-TemplateHeight+1
+    for j=1:QueryImageWidth-TemplateWidth+1
+        SSDMatrix(i,j)=sum(sum((QueryImage(i:i+TemplateImageHeight-1,j:j+TemplateImageWidth-1)-TemplateImage).^2));
+    end
+end
+MinSSD=0;
+for i=1:QueryImageHeight-TemplateHeight+1
+    for j=1:QueryImageWidth-TemplateWidth+1
+        if (i == 1) && (j==1)
+            MinSSD=SSDMatrix(i,j);
+        else
+            if SSDMatrix(i,j)<MinSSD
+                MatchingPosition=[i;j];
+            elseif (SSDMatrix(i,j) == MinSSD) && (i)
+        end
+        
+    end
+end
+end

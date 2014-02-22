@@ -1,0 +1,7 @@
+%Find eye corner
+clear all;
+clc;
+img=imread('resizedEyes_1.jpg');
+offset=0;
+[m,n]=size(img);
+partImg=img(:,offset+1:max())
