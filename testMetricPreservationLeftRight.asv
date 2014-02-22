@@ -7,12 +7,12 @@ featureNameLeft='AlignedFeature_left35_';
 featureNameRight='AlignedFeature_right35_';
 groundTruthName='queryGroundTruth_';
 knnPositionsName='knnPositions_';
-r=10;%number of principal components
-k_knn=2;
+r=2;%number of principal components
+k_knn=15;
 sigma1=64723;
 %sigma1=376989.5;
-%sigma2=1.6348;
-sigma2=0.3304;
+sigma2=1.6348;
+%sigma2=0.3323;
 epsilon=0.1;
 
 for i = 1:36
@@ -30,9 +30,7 @@ for i = 1:36
     PositionMatrix(:,i)=groundTruthVector';    
 end
 % Do PCA
-COEFF=princomp(OldFeatureMatrix');
-FeatureMatrix=(OldFeatureMatrix'*COEFF(:,1:r))';
-%FeatureMatrix=OldFeatureMatrix;
+COEFF=
 featuredimension=size(FeatureMatrix,1);
 NumOfFeatures=size(FeatureMatrix,2);
 y=PositionMatrix;
