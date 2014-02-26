@@ -1,9 +1,11 @@
 %Plot distance 3D pic
-TestCase=15;
+TestCase=1;
 FeatureVector=FeatureMatrix(:,TestCase);
+OldFeatureVector=OldFeatureMatrix(:,TestCase);
 PositionVector=PositionMatrix(:,TestCase);
 PreservedDistanceMatrix=zeros(6,6);
 DistanceMatrix=zeros(6,6);
+OldDistanceMatrix=zeros(6,6);
 PositionDistanceMatrix=zeros(6,6);
 HeterPositionDistanceMatrix=zeros(6,6);
 for i = 1:6
@@ -11,9 +13,9 @@ for i = 1:6
         PreservedDistanceMatrix(i,j)=(FeatureVector-FeatureMatrix(:,(i-1)*6+j))'*S*(FeatureVector-FeatureMatrix(:,(i-1)*6+j));
         DistanceMatrix(i,j)=(FeatureVector-FeatureMatrix(:,(i-1)*6+j))'*(FeatureVector-FeatureMatrix(:,(i-1)*6+j));
         PositionDistanceMatrix(i,j)=(PositionVector-PositionMatrix(:,(i-1)*6+j))'*(PositionVector-PositionMatrix(:,(i-1)*6+j));
+        OldDistanceMatrix(i,j)=(OldFeatureVector-OldFeatureMatrix(:,(i-1)*6+j))'*(OldFeatureVector-OldFeatureMatrix(:,(i-1)*6+j));
     end
 end
-
 for i = 1:6
     for j=1:6
         if PositionVector(1)<240
@@ -39,6 +41,7 @@ for i = 1:6
         HeterPositionDistanceMatrix(i,j)=(x1-x2)^2+(y1-y2)^2;
     end
 end
+
 for i = 1:6
     for j = 1:6
         for ii=1:6
@@ -49,12 +52,13 @@ for i = 1:6
         end
     end
 end
-
 figure(1)
 mesh(PositionMatrix(2,1:6),PositionMatrix(1,1:6:36),PreservedDistanceMatrix);
 figure(2)
 mesh(PositionMatrix(2,1:6),PositionMatrix(1,1:6:36),DistanceMatrix);
 figure(3)
-mesh(PositionMatrix(2,1:6),PositionMatrix(1,1:6:36),PositionDistanceMatrix);
+mesh(PositionMatrix(2,1:6),PositionMatrix(1,1:6:36),OldDistanceMatrix);
 figure(4)
+mesh(PositionMatrix(2,1:6),PositionMatrix(1,1:6:36),PositionDistanceMatrix);
+figure(5)
 mesh(PositionMatrix(2,1:6),PositionMatrix(1,1:6:36),HeterPositionDistanceMatrix);

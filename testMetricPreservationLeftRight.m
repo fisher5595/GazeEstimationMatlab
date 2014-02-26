@@ -3,16 +3,16 @@ clear all;
 clc;
 %featureName='feature_';
 %matrixAName='amatrix_';
-featureNameLeft='AlignedFeature_left35_';
-featureNameRight='AlignedFeature_right35_';
+featureNameLeft='AlignedFeature_left_';
+featureNameRight='AlignedFeature_right_';
 groundTruthName='queryGroundTruth_';
 knnPositionsName='knnPositions_';
-r=10;%number of principal components
-k_knn=2;
+r=15;%number of principal components
+k_knn=6;
 sigma1=64723;
 %sigma1=376989.5;
-%sigma2=1.6348;
-sigma2=0.3304;
+sigma2=1.6348;
+%sigma2=0.3304;
 epsilon=0.1;
 
 for i = 1:36
@@ -30,9 +30,9 @@ for i = 1:36
     PositionMatrix(:,i)=groundTruthVector';    
 end
 % Do PCA
-COEFF=princomp(OldFeatureMatrix');
+[COEFF,score,latent]=princomp(OldFeatureMatrix');
 FeatureMatrix=(OldFeatureMatrix'*COEFF(:,1:r))';
-%FeatureMatrix=OldFeatureMatrix;
+FeatureMatrix=OldFeatureMatrix;
 featuredimension=size(FeatureMatrix,1);
 NumOfFeatures=size(FeatureMatrix,2);
 y=PositionMatrix;
@@ -124,7 +124,7 @@ while 1
 end
 disp('S:');
 disp(S);
-%S=eye(featuredimension);
+S=eye(featuredimension);
 for i = 1:36
     FeatureVector=FeatureMatrix(:,i);
     for ii = 1:36
