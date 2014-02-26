@@ -1,0 +1,11 @@
+%
+% Generate and compare the gradient, edge matrix.
+%
+clear all;
+clc;
+ImageName='resizedEyes_right_';
+ImageNumber=1;
+ImageExtension='.jpg';
+Image=imread([ImageName,int2str(ImageNumber),ImageExtension]);
+[height,width]=size(Image);
+ImageGradient=zeros()
