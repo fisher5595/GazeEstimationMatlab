@@ -17,6 +17,8 @@ for i=1:height
         if Mag(i,j)<avgMag
             ImageGradient(i,j,:)=zeros(1,2);
             Mag(i,j)=0;
+        else
+            ImageGradient(i,j,:)=ImageGradient(i,j,:)./Mag(i,j);
         end
     end
 end

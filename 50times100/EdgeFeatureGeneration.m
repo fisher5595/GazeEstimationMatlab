@@ -3,12 +3,19 @@
 %
 clear all;
 clc;
-ImageName='alignedEyes_right_';
+ImageName='alignedEyes_left_';
+RightImageName='alignedEyes_right_';
 ImageNumber=1;
-QueryImageNumber=1;
 ImageExtension='.jpg';
 ReferenceImageGradient=GetNormalizedEdgeWithoutWeak(ImageName, ImageNumber, ImageExtension);
-QueryImageGradient=GetNormalizedEdgeWithoutWeak (ImageName, QueryImageNumber, ImageExtension);
-[height, width]=size(imread([ImageName,int2str(ImageNumber),ImageExtension]));
-MatchingScore=zeros(height,width);
-
+RightReferenceImageGradient=GetNormalizedEdgeWithoutWeak(RightImageName, ImageNumber, ImageExtension);
+ScoreResult=zeros(1,36);
+for QueryImageNumber=1:36
+    QueryImageGradient=GetNormalizedEdgeWithoutWeak (ImageName, QueryImageNumber, ImageExtension);
+    RightQueryImageGradient=GetNormalizedEdgeWithoutWeak (RightImageName, QueryImageNumber, ImageExtension);
+    [height, width]=size(imread([ImageName,int2str(ImageNumber),ImageExtension]));
+    MatchingScore=QueryImageGradient(:,:,1).*ReferenceImageGradient(:,:,1)+QueryImageGradient(:,:,2).*ReferenceImageGradient(:,:,2);
+    RightMatchingScore=RightQueryImageGradient(:,:,1).*RightReferenceImageGradient(:,:,1)+RightQueryImageGradient(:,:,2).*RightReferenceImageGradient(:,:,2);
+    ScoreResult(QueryImageNumber)=sum(sum(MatchingScore))+sum(sum(RightMatchingScore));
+end
+[SortedResult,index]=sort(ScoreResult,'descend');
