@@ -3,14 +3,14 @@ clear all;
 clc;
 %featureName='feature_';
 %matrixAName='amatrix_';
-featureNameLeft='AlignedFeature_left_';
-featureNameRight='AlignedFeature_right_';
+featureNameLeft='enlarged_AlignedFeature_left_';
+featureNameRight='enlarged_AlignedFeature_right_';
 groundTruthName='queryGroundTruth_';
 knnPositionsName='knnPositions_';
 r=12;%number of principal components
-k_knn=3;
-%sigma1=64723;
-sigma1=376989.5;
+k_knn=21;
+sigma1=64723;
+%sigma1=376989.5;
 sigma2=1.6348;
 %sigma2=0.3304;
 epsilon=0.1;
@@ -38,42 +38,43 @@ NumOfFeatures=size(FeatureMatrix,2);
 y=PositionMatrix;
 x=FeatureMatrix;
 S=eye(featuredimension);
-% for i=1:NumOfFeatures
-%     for j=1:NumOfFeatures
-%         w(i,j)=exp(-(y(:,i)-y(:,j))'*(y(:,i)-y(:,j))/2/sigma1);
-%     end
-% end
+for i=1:NumOfFeatures
+    for j=1:NumOfFeatures
+        w(i,j)=exp(-(y(:,i)-y(:,j))'*(y(:,i)-y(:,j))/2/sigma1);
+    end
+end
 
 %
 % Change distance of X from homo to heter, gradient of X change from 2 to
 % 1
 %
-for i=1:NumOfFeatures
-    for j=1:NumOfFeatures
-        if y(1,i)<240
-            y1=2*y(1,i)+y(1,i)^2/480-y(1,i);
-        else
-            y1=2*y(1,i)-y(1,i)^2/480+y(1,i);
-        end
-        if y(1,j)<240
-            y2=2*y(1,j)+y(1,j)^2/480-y(1,j);
-        else
-            y2=2*y(1,j)-y(1,j)^2/480+y(1,j);
-        end
-        if y(2,i)<320
-            x1=2*y(2,i)+y(2,i)^2/640-y(1,i);
-        else
-            x1=2*y(2,i)-y(2,i)^2/640+y(1,i);
-        end
-        if y(2,j)<320
-            x2=2*y(2,j)+y(2,j)^2/640-y(1,j);
-        else
-            x2=2*y(2,j)-y(2,j)^2/640+y(1,j);
-        end
-        w(i,j)=exp(-((x1-x2)^2+(y1-y2)^2)/2/sigma1);
-        dd(i,j)=(x1-x2)^2+(y1-y2)^2;
-    end
-end
+% for i=1:NumOfFeatures
+%     for j=1:NumOfFeatures
+%         if y(1,i)<240
+%             y1=2*y(1,i)+y(1,i)^2/480-y(1,i);
+%         else
+%             y1=2*y(1,i)-y(1,i)^2/480+y(1,i);
+%         end
+%         if y(1,j)<240
+%             y2=2*y(1,j)+y(1,j)^2/480-y(1,j);
+%         else
+%             y2=2*y(1,j)-y(1,j)^2/480+y(1,j);
+%         end
+%         if y(2,i)<320
+%             x1=2*y(2,i)+y(2,i)^2/640-y(1,i);
+%         else
+%             x1=2*y(2,i)-y(2,i)^2/640+y(1,i);
+%         end
+%         if y(2,j)<320
+%             x2=2*y(2,j)+y(2,j)^2/640-y(1,j);
+%         else
+%             x2=2*y(2,j)-y(2,j)^2/640+y(1,j);
+%         end
+%         w(i,j)=exp(-((x1-x2)^2+(y1-y2)^2)/2/sigma1);
+%         dd(i,j)=(x1-x2)^2+(y1-y2)^2;
+%     end
+% end
+
 for i=1:NumOfFeatures
     for j=1:NumOfFeatures
         p(i,j)=w(i,j)/(sum(w(i,:))-w(i,i));
@@ -124,7 +125,7 @@ while 1
 end
 disp('S:');
 disp(S);
-S=eye(featuredimension);
+%S=eye(featuredimension);
 for i = 1:36
     FeatureVector=FeatureMatrix(:,i);
     for ii = 1:36
