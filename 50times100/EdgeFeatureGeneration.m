@@ -3,9 +3,9 @@
 %
 clear all;
 clc;
-ImageName='alignedEyes_left_';
-RightImageName='alignedEyes_right_';
-ImageNumber=1;
+ImageName='enlarged_alignedEyes_left_';
+RightImageName='enlarged_alignedEyes_right_';
+ImageNumber=2;
 ImageExtension='.jpg';
 ReferenceImageGradient=GetNormalizedEdgeWithoutWeak(ImageName, ImageNumber, ImageExtension);
 RightReferenceImageGradient=GetNormalizedEdgeWithoutWeak(RightImageName, ImageNumber, ImageExtension);
