@@ -48,63 +48,63 @@ S=eye(featuredimension);
 % Change distance of X from homo to heter, gradient of X change from 1 to 2 to
 % 1, from border to center to border.
 %
-% for i=1:NumOfFeatures
-%     for j=1:NumOfFeatures
-%         if y(1,i)<240
-%             y1=2*y(1,i)+y(1,i)^2/480-y(1,i);
-%         else
-%             y1=2*y(1,i)-y(1,i)^2/480+y(1,i);
-%         end
-%         if y(1,j)<240
-%             y2=2*y(1,j)+y(1,j)^2/480-y(1,j);
-%         else
-%             y2=2*y(1,j)-y(1,j)^2/480+y(1,j);
-%         end
-%         if y(2,i)<320
-%             x1=2*y(2,i)+y(2,i)^2/640-y(1,i);
-%         else
-%             x1=2*y(2,i)-y(2,i)^2/640+y(1,i);
-%         end
-%         if y(2,j)<320
-%             x2=2*y(2,j)+y(2,j)^2/640-y(1,j);
-%         else
-%             x2=2*y(2,j)-y(2,j)^2/640+y(1,j);
-%         end
-%         w(i,j)=exp(-((x1-x2)^2+(y1-y2)^2)/2/sigma1);
-%         dd(i,j)=(x1-x2)^2+(y1-y2)^2;
-%     end
-% end
-
-%
-% Change distance of X from homo to heter, gradient of X change from 2 to
-% 1 to 2, from border to center to border
-%
 for i=1:NumOfFeatures
     for j=1:NumOfFeatures
         if y(1,i)<240
-            y1=2*y(1,i)-y(1,i)^2/480;
+            y1=2*y(1,i)+y(1,i)^2/480-y(1,i);
         else
-            y1=y(1,i)^2/480;
+            y1=2*y(1,i)-y(1,i)^2/480+y(1,i);
         end
         if y(1,j)<240
-            y2=2*y(1,j)-y(1,j)^2/480;
+            y2=2*y(1,j)+y(1,j)^2/480-y(1,j);
         else
-            y2=y(1,j)^2/480;
+            y2=2*y(1,j)-y(1,j)^2/480+y(1,j);
         end
         if y(2,i)<320
-            x1=2*y(2,i)-y(2,i)^2/640;
+            x1=2*y(2,i)+y(2,i)^2/640-y(2,i);
         else
-            x1=y(2,i)^2/640;
+            x1=2*y(2,i)-y(2,i)^2/640+y(2,i);
         end
         if y(2,j)<320
-            x2=2*y(2,j)-y(2,j)^2/640;
+            x2=2*y(2,j)+y(2,j)^2/640-y(2,j);
         else
-            x2=y(2,j)^2/640;
+            x2=2*y(2,j)-y(2,j)^2/640+y(2,j);
         end
         w(i,j)=exp(-((x1-x2)^2+(y1-y2)^2)/2/sigma1);
         dd(i,j)=(x1-x2)^2+(y1-y2)^2;
     end
 end
+
+%
+% Change distance of X from homo to heter, gradient of X change from 2 to
+% 1 to 2, from border to center to border
+%
+% for i=1:NumOfFeatures
+%     for j=1:NumOfFeatures
+%         if y(1,i)<240
+%             y1=2*y(1,i)-y(1,i)^2/480;
+%         else
+%             y1=y(1,i)^2/480;
+%         end
+%         if y(1,j)<240
+%             y2=2*y(1,j)-y(1,j)^2/480;
+%         else
+%             y2=y(1,j)^2/480;
+%         end
+%         if y(2,i)<320
+%             x1=2*y(2,i)-y(2,i)^2/640;
+%         else
+%             x1=y(2,i)^2/640;
+%         end
+%         if y(2,j)<320
+%             x2=2*y(2,j)-y(2,j)^2/640;
+%         else
+%             x2=y(2,j)^2/640;
+%         end
+%         w(i,j)=exp(-((x1-x2)^2+(y1-y2)^2)/2/sigma1);
+%         dd(i,j)=(x1-x2)^2+(y1-y2)^2;
+%     end
+% end
 
 for i=1:NumOfFeatures
     for j=1:NumOfFeatures
