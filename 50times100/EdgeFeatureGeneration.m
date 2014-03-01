@@ -1,8 +1,7 @@
 %
 % Generate and compare the gradient, edge matrix.
 %
-clear all;
-clc;
+
 ImageName='enlarged_alignedEyes_left_';
 RightImageName='enlarged_alignedEyes_right_';
 ImageNumber=2;
@@ -19,3 +18,26 @@ for QueryImageNumber=1:36
     ScoreResult(QueryImageNumber)=sum(sum(MatchingScore))+sum(sum(RightMatchingScore));
 end
 [SortedResult,index]=sort(ScoreResult,'descend');
+
+
+disp('Position distance:');
+[PositionSortedResult,PositionIndex]=sort(TotalPositionDistanceMatrix(ImageNumber,:));
+disp(PositionIndex);
+
+PreservedDistance=zeros(1,36);
+PreservedFeatureVector=FeatureMatrix(:,ImageNumber);
+for i = 1:6
+    for j=1:6
+        PreservedDistance((i-1)*6+j)=(PreservedFeatureVector-FeatureMatrix(:,(i-1)*6+j))'*S*(PreservedFeatureVector-FeatureMatrix(:,(i-1)*6+j));        
+    end
+end
+[PreservedFeatureDisanceSortResult,FeatureIndex]=sort(PreservedDistance);
+disp('Pixel feature matching index:')
+disp(FeatureIndex);
+disp('Pixel feature matching index correct:')
+disp(sum(FeatureIndex==PositionIndex));
+
+disp('Edge matching index:');
+disp(index);
+disp('Edge matching index corrct:');
+disp(sum(index==PositionIndex));

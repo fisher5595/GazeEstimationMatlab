@@ -1,5 +1,5 @@
 %Plot distance 3D pic
-TestCase=15;
+TestCase=1;
 FeatureVector=FeatureMatrix(:,TestCase);
 OldFeatureVector=OldFeatureMatrix(:,TestCase);
 PositionVector=PositionMatrix(:,TestCase);
@@ -50,31 +50,31 @@ end
 % Heterogenous distance, gradient from border to center to border is 2 to 1
 % to 2
 %
-for i = 1:6
-    for j=1:6
-        if PositionVector(1)<240
-            y1=2*PositionVector(1)-PositionVector(1)^2/480;
-        else
-            y1=PositionVector(1)^2/480;
-        end
-        if PositionMatrix(1,(i-1)*6+j)<240
-            y2=2*PositionMatrix(1,(i-1)*6+j)-PositionMatrix(1,(i-1)*6+j)^2/480;
-        else
-            y2=PositionMatrix(1,(i-1)*6+j)^2/480;
-        end
-        if PositionVector(2)<320
-            x1=2*PositionVector(2)-PositionVector(2)^2/640;
-        else
-            x1=PositionVector(2)^2/640;
-        end
-        if PositionMatrix(2,(i-1)*6+j)<320
-            x2=2*PositionMatrix(2,(i-1)*6+j)-PositionMatrix(2,(i-1)*6+j)^2/640;
-        else
-            x2=PositionMatrix(2,(i-1)*6+j)^2/640;
-        end
-        HeterPositionDistanceMatrix(i,j)=(x1-x2)^2+(y1-y2)^2;
-    end
-end
+% for i = 1:6
+%     for j=1:6
+%         if PositionVector(1)<240
+%             y1=2*PositionVector(1)-PositionVector(1)^2/480;
+%         else
+%             y1=PositionVector(1)^2/480;
+%         end
+%         if PositionMatrix(1,(i-1)*6+j)<240
+%             y2=2*PositionMatrix(1,(i-1)*6+j)-PositionMatrix(1,(i-1)*6+j)^2/480;
+%         else
+%             y2=PositionMatrix(1,(i-1)*6+j)^2/480;
+%         end
+%         if PositionVector(2)<320
+%             x1=2*PositionVector(2)-PositionVector(2)^2/640;
+%         else
+%             x1=PositionVector(2)^2/640;
+%         end
+%         if PositionMatrix(2,(i-1)*6+j)<320
+%             x2=2*PositionMatrix(2,(i-1)*6+j)-PositionMatrix(2,(i-1)*6+j)^2/640;
+%         else
+%             x2=PositionMatrix(2,(i-1)*6+j)^2/640;
+%         end
+%         HeterPositionDistanceMatrix(i,j)=(x1-x2)^2+(y1-y2)^2;
+%     end
+% end
 
 for i = 1:6
     for j = 1:6
