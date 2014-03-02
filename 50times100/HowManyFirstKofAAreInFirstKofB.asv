@@ -1,0 +1,9 @@
+function ResultVector = HowManyFirstKofAAreInFirstKofB(A,B)
+dimension=size(A,2);
+ResultVector=zeros(1,dimension);
+for i=1:dimension
+    for j=1:i
+        if 
+    end
+end
+end
