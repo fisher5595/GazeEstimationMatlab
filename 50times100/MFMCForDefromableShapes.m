@@ -3,7 +3,16 @@
 % one and middle circle for iris.
 clc;
 clear all;
-Img=imread('resizedEyes_right_35.jpg');
+Img=imread('enlarged_ResizedEyes_left_5.jpg');
+
+% Parameters
+[Height,Width]=size(Img);
+Xe=[Height/2;Width/2];
+Xc=[Height/2;Width/2];
+Theta=0;
+A=Height/2;
+C=Height/2;
+B=Width/2;
 
 % Loop body
 
