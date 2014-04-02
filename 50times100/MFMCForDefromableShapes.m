@@ -89,7 +89,10 @@ for iter=1:MaxIter
         end
         Message=exp(Message);
         Up_Samples_NewWeight(i)=ObservationValue_UpParabola( EdgeMag, Up_XeSamples(:,i), Up_ThetaSamples(i), Up_ASamples(i), Up_BSamples(i))*Message/(1/(2*pi)/Sigma4/Sigma1*exp(-(Up_BSamples(i)-2*R)^2/2/(Sigma1^2)-norm(Up_XeSamples(:,i)-Xc,2)^2/2/(Sigma4^2)));
-
+        if isnan(Up_Samples_NewWeight(i))
+            disp('nan');
+        end
+        
         % Low parabola
         Message=0;
         for n=1:SampleAmount
@@ -97,7 +100,10 @@ for iter=1:MaxIter
         end
         Message=exp(Message);
         Low_Samples_NewWeight(i)=ObservationValue_LowParabola( EdgeMag, Low_XeSamples(:,i), Low_ThetaSamples(i), Low_CSamples(i), Low_BSamples(i))*Message/(1/(2*pi)/Sigma4/Sigma1*exp(-(Low_BSamples(i)-2*R)^2/2/(Sigma1^2)-norm(Low_XeSamples(:,i)-Xc,2)^2/2/(Sigma4^2)));
-
+        if isnan(Low_Samples_NewWeight(i))
+            disp('nan');
+        end
+        
         % Iris circle
         Message=0;
         for n=1:SampleAmount
@@ -106,6 +112,9 @@ for iter=1:MaxIter
         end
         Message=exp(Message);
         Iris_Samples_NewWeight(i)=ObservationValue_Iris( EdgeMag, Iris_XcSamples(:,i), Xe, Theta, Iris_RSamples(i))*Message/(1/(2*pi)/Sigma4/Sigma1*exp(-(B-2*Iris_RSamples(i))^2/2/(Sigma1^2)-norm(Xe-Iris_XcSamples(:,i),2)^2/2/(Sigma4^2)));
+        if isnan(Iris_Samples_NewWeight(i))
+            disp('nan');
+        end
     end
     % Normalize weight
     Up_Samples_NewWeight=Up_Samples_NewWeight./sum(Up_Samples_NewWeight);
