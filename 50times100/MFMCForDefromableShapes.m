@@ -2,7 +2,7 @@
 % In this situation, we have tree parts for one eye. Upper parabola, lower
 % one and middle circle for iris.
 clc;
-clear all;
+clear;
 Img=imread('enlarged_ResizedEyes_left_5.jpg');
 Maskx=[-1 0 1; -2 0 2; -1 0 1];
 Masky=[1 2 1; 0 0 0; -1 -2 -1];
@@ -12,8 +12,9 @@ EdgeMag=sqrt(Gy.^2+Gx.^2);
 
 % Parameters
 [Height,Width]=size(Img);
-Xe=[Height/2;Width/2];
-Xc=[Height/2;Width/2];
+Xe=[Height*0.6;Width*0.6];
+Xc=[Height*0.6;Width*0.6];
+%Xc=[0;0];
 Theta=0;
 A=Height/4;
 C=Height/4;
@@ -21,11 +22,19 @@ B=Width/4;
 R=Width/8;
 MaxIter=5;
 SampleAmount=30;
-Sigma1=10;
+Sigma1=5;
 Sigma2=pi/4;
 Sigma3=5;
 Sigma4=10;
 Sigma5=5;
+ResultImg=uint8(zeros(size(Img,1),size(Img,2),3));
+ResultImg(:,:,1)=Img;
+ResultImg(:,:,2)=Img;
+ResultImg(:,:,3)=Img;
+ResultImg=WriteResultOnImg( ResultImg, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, C, B, R );
+figure(1);
+imshow(ResultImg);
+
 % Loop body
 for iter=1:MaxIter
     % Importance sampling: Importance function can use the potential function.
@@ -91,6 +100,7 @@ for iter=1:MaxIter
         Up_Samples_NewWeight(i)=ObservationValue_UpParabola( EdgeMag, Up_XeSamples(:,i), Up_ThetaSamples(i), Up_ASamples(i), Up_BSamples(i))*Message/(1/(2*pi)/Sigma4/Sigma1*exp(-(Up_BSamples(i)-2*R)^2/2/(Sigma1^2)-norm(Up_XeSamples(:,i)-Xc,2)^2/2/(Sigma4^2)));
         if isnan(Up_Samples_NewWeight(i))
             disp('nan');
+            ObservationValue_UpParabola( EdgeMag, Up_XeSamples(:,i), Up_ThetaSamples(i), Up_ASamples(i), Up_BSamples(i));
         end
         
         % Low parabola
@@ -102,6 +112,7 @@ for iter=1:MaxIter
         Low_Samples_NewWeight(i)=ObservationValue_LowParabola( EdgeMag, Low_XeSamples(:,i), Low_ThetaSamples(i), Low_CSamples(i), Low_BSamples(i))*Message/(1/(2*pi)/Sigma4/Sigma1*exp(-(Low_BSamples(i)-2*R)^2/2/(Sigma1^2)-norm(Low_XeSamples(:,i)-Xc,2)^2/2/(Sigma4^2)));
         if isnan(Low_Samples_NewWeight(i))
             disp('nan');
+            ObservationValue_LowParabola( EdgeMag, Low_XeSamples(:,i), Low_ThetaSamples(i), Low_CSamples(i), Low_BSamples(i));
         end
         
         % Iris circle
@@ -111,9 +122,10 @@ for iter=1:MaxIter
             Message=Message+Low_Samples_Old_Weight(n)*log(1/(2*pi)/Sigma4/Sigma1*exp(-(Low_Old_BSamples(n)-2*Iris_RSamples(n))^2/2/(Sigma1^2)-norm(Low_Old_XeSamples(:,n)-Iris_Old_XcSamples(:,i),2)^2/2/(Sigma4^2)));
         end
         Message=exp(Message);
-        Iris_Samples_NewWeight(i)=ObservationValue_Iris( EdgeMag, Iris_XcSamples(:,i), Xe, Theta, Iris_RSamples(i))*Message/(1/(2*pi)/Sigma4/Sigma1*exp(-(B-2*Iris_RSamples(i))^2/2/(Sigma1^2)-norm(Xe-Iris_XcSamples(:,i),2)^2/2/(Sigma4^2)));
+        Iris_Samples_NewWeight(i)=ObservationValue_Iris( EdgeMag, ImgCor2NewCor(Iris_XcSamples(:,i),Xe,Theta), Xe, Theta, Iris_RSamples(i))*Message/(1/(2*pi)/Sigma4/Sigma1*exp(-(B-2*Iris_RSamples(i))^2/2/(Sigma1^2)-norm(Xe-Iris_XcSamples(:,i),2)^2/2/(Sigma4^2)));
         if isnan(Iris_Samples_NewWeight(i))
             disp('nan');
+            ObservationValue_Iris( EdgeMag, Iris_XcSamples(:,i), Xe, Theta, Iris_RSamples(i));
         end
     end
     % Normalize weight
@@ -165,3 +177,16 @@ for iter=1:MaxIter
     Iris_Old_RSamples=Iris_RSamples;
 end
 % End of loop body
+
+% Display result
+ResultImg=uint8(zeros(size(Img,1),size(Img,2),3));
+ResultImg(:,:,1)=Img;
+ResultImg(:,:,2)=Img;
+ResultImg(:,:,3)=Img;
+ResultImg=WriteResultOnImg( ResultImg, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, C, B, R );
+figure(2);
+imshow(ResultImg);
+figure(3);
+imshow(EdgeMag./max(max(EdgeMag)));
+
+
