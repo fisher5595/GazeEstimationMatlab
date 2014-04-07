@@ -1,4 +1,4 @@
-function [ ObservationValue ] = ObservationValue_Iris( EdgeMag, Xc, Xe, Theta, R)
+function [ ObservationValue ] = ObservationValue_Iris( EdgeMag, EdgeTheta, Xc, Xe, Theta, R)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 % Xc is relative value
@@ -17,7 +17,7 @@ for CircleTheta=0:Delta:(2*pi)
             y=Normal*(x-x0)+y0;
             ImageCor=NewCor2ImgCor([y;x], Xe, Theta);
             if ImageCor(1)<=Height && ImageCor(1)>=1 && ImageCor(2)<=Width && ImageCor(2)>=1
-                Value=Value-norm([y-y0;x-x0],2)^2/exp(EdgeMag(ImageCor(1),ImageCor(2)));
+                Value=Value-norm([y-y0;x-x0],2)^2/exp(EdgeMag(ImageCor(1),ImageCor(2)))/exp(abs(EdgeTheta(ImageCor(1),ImageCor(2))-atan(Normal))/2/pi);
             end
         end
     else
@@ -25,7 +25,7 @@ for CircleTheta=0:Delta:(2*pi)
             x=k*(y-y0)+x0;
             ImageCor=NewCor2ImgCor([y;x], Xe, Theta);
             if ImageCor(1)<=Height && ImageCor(1)>=1 && ImageCor(2)<=Width && ImageCor(2)>=1
-                Value=Value-norm([y-y0;x-x0],2)^2/exp(EdgeMag(ImageCor(1),ImageCor(2)));
+                Value=Value-norm([y-y0;x-x0],2)^2/exp(EdgeMag(ImageCor(1),ImageCor(2)))/exp(abs(EdgeTheta(ImageCor(1),ImageCor(2))-atan(Normal))/2/pi);
             end
         end
     end
