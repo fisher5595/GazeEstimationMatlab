@@ -21,7 +21,7 @@ C=Height/4;
 B=Width/4;
 R=Width/8;
 MaxIter=5;
-SampleAmount=30;
+SampleAmount=100;
 Sigma1=5;
 Sigma2=pi/4;
 Sigma3=5;
@@ -188,5 +188,12 @@ figure(2);
 imshow(ResultImg);
 figure(3);
 imshow(EdgeMag./max(max(EdgeMag)));
+ResultOnEdge=uint8(zeros(size(EdgeMag,1),size(EdgeMag,2),3));
+ResultOnEdge(:,:,1)=uint8(EdgeMag./max(max(EdgeMag))*255);
+ResultOnEdge(:,:,2)=uint8(EdgeMag./max(max(EdgeMag))*255);
+ResultOnEdge(:,:,3)=uint8(EdgeMag./max(max(EdgeMag))*255);
+ResultOnEdge=WriteResultOnImg( ResultOnEdge, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, C, B, R );
+figure(4);
+imshow(ResultOnEdge);
 
 

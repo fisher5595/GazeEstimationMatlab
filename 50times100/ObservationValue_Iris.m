@@ -6,13 +6,14 @@ Value=0;
 [Height,Width]=size(EdgeMag);
 Delta=2*pi/100;
 sigma=2;
+displacement=0.5;
 for CircleTheta=0:Delta:(2*pi)
     x0=R*cos(CircleTheta)+Xc(2);
     y0=R*sin(CircleTheta)+Xc(1);
     Normal=tan(CircleTheta);
     k=1/Normal;
     if abs(Normal)<1 || abs(k)>1
-        for x=(x0-5):1:(x0+5)
+        for x=(x0-displacement):1:(x0+displacement)
             y=Normal*(x-x0)+y0;
             ImageCor=NewCor2ImgCor([y;x], Xe, Theta);
             if ImageCor(1)<=Height && ImageCor(1)>=1 && ImageCor(2)<=Width && ImageCor(2)>=1
@@ -20,7 +21,7 @@ for CircleTheta=0:Delta:(2*pi)
             end
         end
     else
-        for y=(y0-5):1:(y0+5)
+        for y=(y0-displacement):1:(y0+displacement)
             x=k*(y-y0)+x0;
             ImageCor=NewCor2ImgCor([y;x], Xe, Theta);
             if ImageCor(1)<=Height && ImageCor(1)>=1 && ImageCor(2)<=Width && ImageCor(2)>=1
