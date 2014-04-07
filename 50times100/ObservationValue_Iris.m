@@ -31,6 +31,10 @@ for CircleTheta=0:Delta:(2*pi)
     end
 end
 
-ObservationValue=exp(Value/(sigma^2));
+if Value==0
+    ObservationValue=0;
+else
+    ObservationValue=exp(Value/(sigma^2));
+end
 
 end
