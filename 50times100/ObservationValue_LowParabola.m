@@ -15,6 +15,9 @@ for x0=-B:1:B
             ImageCor=NewCor2ImgCor([y;x], Xe, Theta);
             if ImageCor(1)<=Height && ImageCor(1)>=1 && ImageCor(2)<=Width && ImageCor(2)>=1
                 Value=Value-norm([y-y0;x-x0],2)^2/exp(EdgeMag(ImageCor(1),ImageCor(2)))/exp(abs(EdgeTheta(ImageCor(1),ImageCor(2))-atan(Normal))/2/pi);
+                if isnan(Value)
+                    disp('nan');
+                end
             end
         end
     else
@@ -23,6 +26,9 @@ for x0=-B:1:B
             ImageCor=NewCor2ImgCor([y;x], Xe, Theta);
             if ImageCor(1)<=Height && ImageCor(1)>=1 && ImageCor(2)<=Width && ImageCor(2)>=1
                 Value=Value-norm([y-y0;x-x0],2)^2/exp(EdgeMag(ImageCor(1),ImageCor(2)))/exp(abs(EdgeTheta(ImageCor(1),ImageCor(2))-atan(Normal))/2/pi);
+                if isnan(Value)
+                    disp('nan');
+                end
             end
         end
     end

@@ -6,13 +6,24 @@ clear;
 Img=imread('enlarged_ResizedEyes_left_5.jpg');
 Maskx=[-1 0 1; -2 0 2; -1 0 1];
 Masky=[1 2 1; 0 0 0; -1 -2 -1];
+[Height,Width]=size(Img);
 Gx=conv2(double(Img), double(Maskx), 'same');
 Gy=conv2(double(Img), double(Masky), 'same');
 EdgeMag=sqrt(Gy.^2+Gx.^2);
-EdgeTheta=atan(Gy./Gx);
+EdgeTheta=zeros(Height,Width);
+for y=1:Height
+    for x=1:Width
+        if Gx(y,x)~=0
+            EdgeTheta(y,x)=atan(Gy(y,x)/Gx(y,x));
+        elseif Gy(y,x)>0
+            EdgeTheta(y,x)=pi/2;
+        else
+            EdgeTheta(y,x)=-pi/2;
+        end
+    end
+end
 
 % Parameters
-[Height,Width]=size(Img);
 Xe=[Height*0.6;Width*0.6];
 Xc=[Height*0.6;Width*0.6];
 %Xc=[0;0];
