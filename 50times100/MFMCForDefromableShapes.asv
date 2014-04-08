@@ -10,11 +10,26 @@ Masky=[1 2 1; 0 0 0; -1 -2 -1];
 Gx=conv2(double(Img), double(Maskx), 'same');
 Gy=conv2(double(Img), double(Masky), 'same');
 EdgeMag=sqrt(Gy.^2+Gx.^2);
+EdgeTheta=zeros(Height,Width);
+% Angel of gradient of image, range from 0 to 2pi
 for y=1:Height
     for x=1:Width
         if Gx(y,x)~=0
             EdgeTheta(y,x)=atan(Gy(y,x)/Gx(y,x));
-        elseif Gy(y,x)
+            if Gx(y,x)>0 && Gy(y,x)>=0
+                EdgeTheta(y,x)=EdgeTheta(y,x);
+            elseif Gx(y,x)>0 && Gy(y,x)<=0
+                EdgeTheta(y,x)=EdgeTheta(y,x)+2*pi;
+            elseif Gx(y,x)<0 && Gy(y,x)>=0
+                EdgeTheta(y,x)=EdgeTheta(y,x)+pi;
+            else
+                EdgeTheta(y,x)=EdgeTheta(y,x)+pi;
+            end
+        elseif Gy(y,x)>0
+            EdgeTheta(y,x)=pi/2;
+        else
+            EdgeTheta(y,x)=pi/2*3;
+        end
     end
 end
 
@@ -39,8 +54,6 @@ ResultImg(:,:,1)=Img;
 ResultImg(:,:,2)=Img;
 ResultImg(:,:,3)=Img;
 ResultImg=WriteResultOnImg( ResultImg, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, C, B, R );
-figure(1);
-imshow(ResultImg);
 
 % Loop body
 for iter=1:MaxIter

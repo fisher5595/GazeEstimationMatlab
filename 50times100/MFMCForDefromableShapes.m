@@ -11,14 +11,24 @@ Gx=conv2(double(Img), double(Maskx), 'same');
 Gy=conv2(double(Img), double(Masky), 'same');
 EdgeMag=sqrt(Gy.^2+Gx.^2);
 EdgeTheta=zeros(Height,Width);
+% Angel of gradient of image, range from 0 to 2pi
 for y=1:Height
     for x=1:Width
         if Gx(y,x)~=0
             EdgeTheta(y,x)=atan(Gy(y,x)/Gx(y,x));
+            if Gx(y,x)>0 && Gy(y,x)>=0
+                EdgeTheta(y,x)=EdgeTheta(y,x);
+            elseif Gx(y,x)>0 && Gy(y,x)<=0
+                EdgeTheta(y,x)=EdgeTheta(y,x)+2*pi;
+            elseif Gx(y,x)<0 && Gy(y,x)>=0
+                EdgeTheta(y,x)=EdgeTheta(y,x)+pi;
+            else
+                EdgeTheta(y,x)=EdgeTheta(y,x)+pi;
+            end
         elseif Gy(y,x)>0
             EdgeTheta(y,x)=pi/2;
         else
-            EdgeTheta(y,x)=-pi/2;
+            EdgeTheta(y,x)=pi/2*3;
         end
     end
 end
@@ -39,13 +49,11 @@ Sigma2=pi/4;
 Sigma3=5;
 Sigma4=10;
 Sigma5=5;
-ResultImg=uint8(zeros(size(Img,1),size(Img,2),3));
-ResultImg(:,:,1)=Img;
-ResultImg(:,:,2)=Img;
-ResultImg(:,:,3)=Img;
-ResultImg=WriteResultOnImg( ResultImg, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, C, B, R );
-figure(1);
-imshow(ResultImg);
+IniResultImg=uint8(zeros(size(Img,1),size(Img,2),3));
+IniResultImg(:,:,1)=Img;
+IniResultImg(:,:,2)=Img;
+IniResultImg(:,:,3)=Img;
+IniResultImg=WriteResultOnImg( IniResultImg, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, C, B, R );
 
 % Loop body
 for iter=1:MaxIter
@@ -196,16 +204,21 @@ ResultImg(:,:,1)=Img;
 ResultImg(:,:,2)=Img;
 ResultImg(:,:,3)=Img;
 ResultImg=WriteResultOnImg( ResultImg, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, C, B, R );
-figure(2);
-imshow(ResultImg);
-figure(3);
-imshow(EdgeMag./max(max(EdgeMag)));
 ResultOnEdge=uint8(zeros(size(EdgeMag,1),size(EdgeMag,2),3));
 ResultOnEdge(:,:,1)=uint8(EdgeMag./max(max(EdgeMag))*255);
 ResultOnEdge(:,:,2)=uint8(EdgeMag./max(max(EdgeMag))*255);
 ResultOnEdge(:,:,3)=uint8(EdgeMag./max(max(EdgeMag))*255);
 ResultOnEdge=WriteResultOnImg( ResultOnEdge, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, C, B, R );
-figure(4);
+
+% Display results
+figure(1);
+subplot(2,2,1);
+imshow(IniResultImg);
+subplot(2,2,2);
+imshow(ResultImg);
+subplot(2,2,3);
+imshow(EdgeMag./max(max(EdgeMag)));
+subplot(2,2,4);
 imshow(ResultOnEdge);
 
 
