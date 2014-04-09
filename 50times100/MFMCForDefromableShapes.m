@@ -11,6 +11,10 @@ Gx=conv2(double(Img), double(Maskx), 'same');
 Gy=conv2(double(Img), double(Masky), 'same');
 EdgeMag=sqrt(Gy.^2+Gx.^2);
 EdgeTheta=zeros(Height,Width);
+% Do median filtering indenpently on the Gx and Gy, to denoise noise in the
+% theata of gradient
+Gx=medfilt2(Gx);
+Gy=medfilt2(Gy);
 % Angel of gradient of image, range from 0 to 2pi
 for y=1:Height
     for x=1:Width
@@ -44,9 +48,9 @@ B=Width/4;
 R=Width/8;
 MaxIter=5;
 SampleAmount=100;
-Sigma1=5;
+Sigma1=10;
 Sigma2=pi/4;
-Sigma3=5;
+Sigma3=10;
 Sigma4=10;
 Sigma5=5;
 IniResultImg=uint8(zeros(size(Img,1),size(Img,2),3));
