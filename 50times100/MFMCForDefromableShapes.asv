@@ -9,13 +9,12 @@ Masky=[1 2 1; 0 0 0; -1 -2 -1];
 [Height,Width]=size(Img);
 Gx=conv2(double(Img), double(Maskx), 'same');
 Gy=conv2(double(Img), double(Masky), 'same');
+EdgeMag=sqrt(Gy.^2+Gx.^2);
+EdgeTheta=zeros(Height,Width);
 % Do median filtering indenpently on the Gx and Gy, to denoise noise in the
 % theata of gradient
 Gx=medfilt2(Gx);
 Gy=medfilt2(Gy);
-EdgeMag=sqrt(Gy.^2+Gx.^2);
-EdgeTheta=zeros(Height,Width);
-
 % Angel of gradient of image, range from 0 to 2pi
 for y=1:Height
     for x=1:Width
@@ -39,19 +38,19 @@ for y=1:Height
 end
 
 % Parameters
-Xe=[Height*0.7;Width*0.6];
+Xe=[Height*0.6;Width*0.6];
 Xc=[Height*0.6;Width*0.6];
 %Xc=[0;0];
 Theta=0;
-A=Height/2;
-C=Height/8;
+A=Height/4;
+C=Height/4;
 B=Width/4;
 R=Width/8;
 MaxIter=5;
-SampleAmount=1000;
-Sigma1=15;
+SampleAmount=100;
+Sigma1=10;
 Sigma2=pi/4;
-Sigma3=20;
+Sigma3=10;
 Sigma4=10;
 Sigma5=5;
 IniResultImg=uint8(zeros(size(Img,1),size(Img,2),3));
@@ -151,9 +150,9 @@ for iter=1:MaxIter
             ObservationValue_Iris( EdgeMag, EdgeTheta, Iris_XcSamples(:,i), Xe, Theta, Iris_RSamples(i));
         end
     end
-    Xe=(Up_XeSamples*Up_Samples_NewWeight'+Low_XeSamples*Low_Samples_NewWeight')/(sum(Up_Samples_NewWeight)+sum(Low_Samples_NewWeight));
-    Theta=(Up_ThetaSamples*Up_Samples_NewWeight'+Low_ThetaSamples*Low_Samples_NewWeight')/(sum(Up_Samples_NewWeight)+sum(Low_Samples_NewWeight));
-    B=(Up_BSamples*Up_Samples_NewWeight'+Low_BSamples*Low_Samples_NewWeight')/(sum(Up_Samples_NewWeight)+sum(Low_Samples_NewWeight));
+    Xe=(Up_XeSamples*Up_Samples_NewWeight'+Low_XeSamples*Low_Samples_NewWeight';
+    Theta=(Up_Theta_Exp+Low_Theta_Exp)/2;
+    B=(Up_B_Exp+Low_B_Exp)/2;
     % Normalize weight
     Up_Samples_NewWeight=Up_Samples_NewWeight./sum(Up_Samples_NewWeight);
     Low_Samples_NewWeight=Low_Samples_NewWeight./sum(Low_Samples_NewWeight);
