@@ -3,7 +3,7 @@
 % one and middle circle for iris.
 clc;
 clear;
-Img=imread('enlarged_ResizedEyes_left_5.jpg');
+Img=imread('enlarged_ResizedEyes_left_1.jpg');
 Maskx=[-1 0 1; -2 0 2; -1 0 1];
 Masky=[1 2 1; 0 0 0; -1 -2 -1];
 [Height,Width]=size(Img);
@@ -47,13 +47,18 @@ A=Height/2;
 C=Height/8;
 B=Width/4;
 R=Width/8;
-MaxIter=5;
-SampleAmount=1000;
-Sigma1=15;
+MaxIter=20;
+SampleAmount=100;
+Sigma1=10;
 Sigma2=pi/4;
-Sigma3=20;
+Sigma3=10;
 Sigma4=10;
-Sigma5=5;
+Sigma5=10;
+Resample_Sigma1=1;
+Resample_Sigma2=pi/16;
+Resample_Sigma3=1;
+Resample_Sigma4=1;
+Resample_Sigma5=1;
 IniResultImg=uint8(zeros(size(Img,1),size(Img,2),3));
 IniResultImg(:,:,1)=Img;
 IniResultImg(:,:,2)=Img;
@@ -64,29 +69,51 @@ IniResultImg=WriteResultOnImg( IniResultImg, Xe, ImgCor2NewCor(Xc,Xe,Theta), The
 for iter=1:MaxIter
     % Importance sampling: Importance function can use the potential function.
     % Do the sampling using the expectation of parameters.
+    if iter==1
+        % Up parabola samples
+        Up_XeSamples=double(zeros(2,SampleAmount));
+        Up_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
+        Up_XeSamples(1,:)=normrnd(Xc(1),Sigma1,1,SampleAmount);
+        Up_XeSamples(2,:)=normrnd(Xc(2),Sigma1,1,SampleAmount);
+        Up_ThetaSamples=normrnd(Theta,Sigma2,1,SampleAmount);
+        Up_ASamples=normrnd(A,Sigma3,1,SampleAmount);
+        Up_BSamples=normrnd(2*R,Sigma4,1,SampleAmount);
 
-    % Up parabola samples
-    Up_XeSamples=double(zeros(2,SampleAmount));
-    Up_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
-    Up_XeSamples(1,:)=normrnd(Xc(1),Sigma1,1,SampleAmount);
-    Up_XeSamples(2,:)=normrnd(Xc(2),Sigma1,1,SampleAmount);
-    Up_ThetaSamples=normrnd(Theta,Sigma2,1,SampleAmount);
-    Up_ASamples=normrnd(A,Sigma3,1,SampleAmount);
-    Up_BSamples=normrnd(2*R,Sigma4,1,SampleAmount);
+        % Low parabola samples
+        Low_XeSamples=Up_XeSamples;
+        Low_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
+        Low_ThetaSamples=Up_ThetaSamples;
+        Low_CSamples=normrnd(C,Sigma3,1,SampleAmount);
+        Low_BSamples=Up_BSamples;
 
-    % Low parabola samples
-    Low_XeSamples=Up_XeSamples;
-    Low_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
-    Low_ThetaSamples=Up_ThetaSamples;
-    Low_CSamples=normrnd(C,Sigma3,1,SampleAmount);
-    Low_BSamples=Up_BSamples;
+        % Iris circle samples
+        Iris_XcSamples=double(zeros(2,SampleAmount));
+        Iris_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
+        Iris_XcSamples(1,:)=normrnd(Xe(1),Sigma1,1,SampleAmount);
+        Iris_XcSamples(2,:)=normrnd(Xe(2),Sigma1,1,SampleAmount);
+        Iris_RSamples=normrnd(B/2,Sigma5,1,SampleAmount);
+    else
+        % Up parabola samples
+        Up_XeSamples=double(zeros(2,SampleAmount));
+        Up_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
+        Up_XeSamples=GenerateSmaplesBasedOnWeights( Iris_Old_XcSamples, Iris_Samples_Old_Weight./sum(Iris_Samples_Old_Weight), Resample_Sigma1, SampleAmount);
+        Up_ThetaSamples=GenerateSmaplesBasedOnWeights(Up_Old_ThetaSamples, Up_Samples_Old_Weight./sum(Up_Samples_Old_Weight)/2+Low_Samples_Old_Weight./sum(Low_Samples_Old_Weight)/2, Resample_Sigma2, SampleAmount);
+        Up_ASamples=GenerateSmaplesBasedOnWeights(Up_Old_ASamples, Up_Samples_Old_Weight./sum(Up_Samples_Old_Weight), Resample_Sigma3, SampleAmount);
+        Up_BSamples=GenerateSmaplesBasedOnWeights(Iris_Old_RSamples.*2, Iris_Samples_Old_Weight./sum(Iris_Samples_Old_Weight), Resample_Sigma4, SampleAmount);
 
-    % Iris circle samples
-    Iris_XcSamples=double(zeros(2,SampleAmount));
-    Iris_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
-    Iris_XcSamples(1,:)=normrnd(Xe(1),Sigma1,1,SampleAmount);
-    Iris_XcSamples(2,:)=normrnd(Xe(2),Sigma1,1,SampleAmount);
-    Iris_RSamples=normrnd(B/2,Sigma5,1,SampleAmount);
+        % Low parabola samples
+        Low_XeSamples=Up_XeSamples;
+        Low_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
+        Low_ThetaSamples=Up_ThetaSamples;
+        Low_CSamples=GenerateSmaplesBasedOnWeights(Low_Old_CSamples,Low_Samples_Old_Weight./sum(Low_Samples_Old_Weight), Resample_Sigma3, SampleAmount);
+        Low_BSamples=Up_BSamples;
+
+        % Iris circle samples
+        Iris_XcSamples=double(zeros(2,SampleAmount));
+        Iris_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
+        Iris_XcSamples=GenerateSmaplesBasedOnWeights( Up_Old_XeSamples, Up_Samples_Old_Weight./sum(Up_Samples_Old_Weight)/2+Low_Samples_Old_Weight./sum(Low_Samples_Old_Weight)/2, Resample_Sigma1, SampleAmount);
+        Iris_RSamples=GenerateSmaplesBasedOnWeights( Up_Old_BSamples./2,Up_Samples_Old_Weight./sum(Up_Samples_Old_Weight)/2+Low_Samples_Old_Weight./sum(Low_Samples_Old_Weight)/2, Resample_Sigma5, SampleAmount);
+    end
 
     if iter==1
         % Assign old values
@@ -198,30 +225,53 @@ for iter=1:MaxIter
     Iris_Old_XcSamples=Iris_XcSamples;
     Iris_Samples_Old_Weight=Iris_Samples_NewWeight;
     Iris_Old_RSamples=Iris_RSamples;
+    
+    % Display result
+    ResultImg=uint8(zeros(size(Img,1),size(Img,2),3));
+    ResultImg(:,:,1)=Img;
+    ResultImg(:,:,2)=Img;
+    ResultImg(:,:,3)=Img;
+    ResultImg=WriteResultOnImg( ResultImg, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, C, B, R );
+    ResultOnEdge=uint8(zeros(size(EdgeMag,1),size(EdgeMag,2),3));
+    ResultOnEdge(:,:,1)=uint8(EdgeMag./max(max(EdgeMag))*255);
+    ResultOnEdge(:,:,2)=uint8(EdgeMag./max(max(EdgeMag))*255);
+    ResultOnEdge(:,:,3)=uint8(EdgeMag./max(max(EdgeMag))*255);
+    ResultOnEdge=WriteResultOnImg( ResultOnEdge, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, C, B, R );
+
+    % Display results
+    figure(iter);
+    subplot(2,2,1);
+    imshow(IniResultImg);
+    subplot(2,2,2);
+    imshow(ResultImg);
+    subplot(2,2,3);
+    imshow(EdgeMag./max(max(EdgeMag)));
+    subplot(2,2,4);
+    imshow(ResultOnEdge);
 end
 % End of loop body
 
-% Display result
-ResultImg=uint8(zeros(size(Img,1),size(Img,2),3));
-ResultImg(:,:,1)=Img;
-ResultImg(:,:,2)=Img;
-ResultImg(:,:,3)=Img;
-ResultImg=WriteResultOnImg( ResultImg, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, C, B, R );
-ResultOnEdge=uint8(zeros(size(EdgeMag,1),size(EdgeMag,2),3));
-ResultOnEdge(:,:,1)=uint8(EdgeMag./max(max(EdgeMag))*255);
-ResultOnEdge(:,:,2)=uint8(EdgeMag./max(max(EdgeMag))*255);
-ResultOnEdge(:,:,3)=uint8(EdgeMag./max(max(EdgeMag))*255);
-ResultOnEdge=WriteResultOnImg( ResultOnEdge, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, C, B, R );
-
-% Display results
-figure(1);
-subplot(2,2,1);
-imshow(IniResultImg);
-subplot(2,2,2);
-imshow(ResultImg);
-subplot(2,2,3);
-imshow(EdgeMag./max(max(EdgeMag)));
-subplot(2,2,4);
-imshow(ResultOnEdge);
+% % Display result
+% ResultImg=uint8(zeros(size(Img,1),size(Img,2),3));
+% ResultImg(:,:,1)=Img;
+% ResultImg(:,:,2)=Img;
+% ResultImg(:,:,3)=Img;
+% ResultImg=WriteResultOnImg( ResultImg, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, C, B, R );
+% ResultOnEdge=uint8(zeros(size(EdgeMag,1),size(EdgeMag,2),3));
+% ResultOnEdge(:,:,1)=uint8(EdgeMag./max(max(EdgeMag))*255);
+% ResultOnEdge(:,:,2)=uint8(EdgeMag./max(max(EdgeMag))*255);
+% ResultOnEdge(:,:,3)=uint8(EdgeMag./max(max(EdgeMag))*255);
+% ResultOnEdge=WriteResultOnImg( ResultOnEdge, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, C, B, R );
+% 
+% % Display results
+% figure(1);
+% subplot(2,2,1);
+% imshow(IniResultImg);
+% subplot(2,2,2);
+% imshow(ResultImg);
+% subplot(2,2,3);
+% imshow(EdgeMag./max(max(EdgeMag)));
+% subplot(2,2,4);
+% imshow(ResultOnEdge);
 
 
