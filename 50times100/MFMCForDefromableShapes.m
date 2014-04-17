@@ -185,6 +185,9 @@ for iter=1:MaxIter
     Up_Samples_NewWeight=Up_Samples_NewWeight./sum(Up_Samples_NewWeight);
     Low_Samples_NewWeight=Low_Samples_NewWeight./sum(Low_Samples_NewWeight);
     Iris_Samples_NewWeight=Iris_Samples_NewWeight./sum(Iris_Samples_NewWeight);
+    
+    % Meanshift analysis
+    Up_SampleModes=MeanshiftFindSampleModes([Up_XeSamples;Up_ThetaSamples;Up_ASamples;Up_BSamples], Up_Samples_NewWeight);
 
     % Get new expectation
     Up_Xe_Exp=Up_XeSamples*Up_Samples_NewWeight';
