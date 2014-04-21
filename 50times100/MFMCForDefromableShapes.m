@@ -47,18 +47,18 @@ A=Height/2;
 C=Height/8;
 B=Width/4;
 R=Width/8;
-MaxIter=20;
-SampleAmount=100;
+MaxIter=10;
+SampleAmount=300;
 Sigma1=10;
 Sigma2=pi/4;
 Sigma3=10;
 Sigma4=10;
 Sigma5=10;
-Resample_Sigma1=1;
+Resample_Sigma1=3;
 Resample_Sigma2=pi/16;
-Resample_Sigma3=1;
-Resample_Sigma4=1;
-Resample_Sigma5=1;
+Resample_Sigma3=3;
+Resample_Sigma4=3;
+Resample_Sigma5=3;
 IniResultImg=uint8(zeros(size(Img,1),size(Img,2),3));
 IniResultImg(:,:,1)=Img;
 IniResultImg(:,:,2)=Img;
@@ -187,26 +187,38 @@ for iter=1:MaxIter
     Iris_Samples_NewWeight=Iris_Samples_NewWeight./sum(Iris_Samples_NewWeight);
     
     % Meanshift analysis
-    Up_SampleModes=MeanshiftFindSampleModes([Up_XeSamples;Up_ThetaSamples;Up_ASamples;Up_BSamples], Up_Samples_NewWeight);
+    [Up_SampleModes,Up_SampleModesWeight]=MeanshiftFindSampleModes([Up_XeSamples;Up_ThetaSamples;Up_ASamples;Up_BSamples], Up_Samples_NewWeight);
+    [Low_SampleModes,Low_SampleModesWeight]=MeanshiftFindSampleModes([Low_XeSamples;Low_ThetaSamples;Low_CSamples;Low_BSamples], Low_Samples_NewWeight);
+    [Iris_SampleModes,Iris_SampleModesWeight]=MeanshiftFindSampleModes([Iris_XcSamples;Iris_RSamples], Up_Samples_NewWeight);
+    [Up_SampleModeMaxWeight,Up_SampleModeMaxIndex]=max(Up_SampleModesWeight);
+    [Low_SampleModeMaxWeight,Low_SampleModeMaxIndex]=max(Low_SampleModesWeight);
+    [Iris_SampleModeMaxWeight,Iris_SampleModeMaxIndex]=max(Iris_SampleModesWeight);
+    Xe=(Up_SampleModes(1:2,Up_SampleModeMaxIndex)*Up_SampleModeMaxWeight+Low_SampleModes(1:2,Low_SampleModeMaxIndex)*Low_SampleModeMaxWeight)/(Up_SampleModeMaxWeight+Low_SampleModeMaxWeight);
+    Theta=(Up_SampleModes(3,Up_SampleModeMaxIndex)*Up_SampleModeMaxWeight+Low_SampleModes(3,Low_SampleModeMaxIndex)*Low_SampleModeMaxWeight)/(Up_SampleModeMaxWeight+Low_SampleModeMaxWeight);
+    B=(Up_SampleModes(5,Up_SampleModeMaxIndex)*Up_SampleModeMaxWeight+Low_SampleModes(5,Low_SampleModeMaxIndex)*Low_SampleModeMaxWeight)/(Up_SampleModeMaxWeight+Low_SampleModeMaxWeight);
+    A=Up_SampleModes(4,Up_SampleModeMaxIndex);
+    C=Low_SampleModes(4,Low_SampleModeMaxIndex);
+    Xc=Iris_SampleModes(1:2,Iris_SampleModeMaxIndex);
+    R=Iris_SampleModes(3,Iris_SampleModeMaxIndex);
 
     % Get new expectation
-    Up_Xe_Exp=Up_XeSamples*Up_Samples_NewWeight';
-    Up_Theta_Exp=Up_ThetaSamples*Up_Samples_NewWeight';
-    Up_A_Exp=Up_ASamples*Up_Samples_NewWeight';
-    Up_B_Exp=Up_BSamples*Up_Samples_NewWeight';
-
-    Low_Xe_Exp=Low_XeSamples*Low_Samples_NewWeight';
-    Low_Theta_Exp=Low_ThetaSamples*Low_Samples_NewWeight';
-    Low_C_Exp=Low_CSamples*Low_Samples_NewWeight';
-    Low_B_Exp=Low_BSamples*Low_Samples_NewWeight';
-
-    Iris_Xc_Exp=Iris_XcSamples*Iris_Samples_NewWeight';
-    Iris_R_Exp=Iris_RSamples*Iris_Samples_NewWeight';
-
-    A=Up_A_Exp;
-    C=Low_C_Exp;
-    Xc=Iris_Xc_Exp;
-    R=Iris_R_Exp;
+%     Up_Xe_Exp=Up_XeSamples*Up_Samples_NewWeight';
+%     Up_Theta_Exp=Up_ThetaSamples*Up_Samples_NewWeight';
+%     Up_A_Exp=Up_ASamples*Up_Samples_NewWeight';
+%     Up_B_Exp=Up_BSamples*Up_Samples_NewWeight';
+% 
+%     Low_Xe_Exp=Low_XeSamples*Low_Samples_NewWeight';
+%     Low_Theta_Exp=Low_ThetaSamples*Low_Samples_NewWeight';
+%     Low_C_Exp=Low_CSamples*Low_Samples_NewWeight';
+%     Low_B_Exp=Low_BSamples*Low_Samples_NewWeight';
+% 
+%     Iris_Xc_Exp=Iris_XcSamples*Iris_Samples_NewWeight';
+%     Iris_R_Exp=Iris_RSamples*Iris_Samples_NewWeight';
+% 
+%     A=Up_A_Exp;
+%     C=Low_C_Exp;
+%     Xc=Iris_Xc_Exp;
+%     R=Iris_R_Exp;
 
     % Assign old values
 
@@ -251,6 +263,11 @@ for iter=1:MaxIter
     imshow(EdgeMag./max(max(EdgeMag)));
     subplot(2,2,4);
     imshow(ResultOnEdge);
+%     scatter3(Up_ThetaSamples,Up_ASamples,Up_BSamples,'*')
+%     axis([-4 5 -20 60 -20 100]);
+%     hold on;
+%     scatter3(Up_Samples_NewWeight,Up_XeSamples(1,:),Up_XeSamples(2,:),'ro')
+%     hold off;
 end
 % End of loop body
 

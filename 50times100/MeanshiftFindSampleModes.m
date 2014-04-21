@@ -1,4 +1,4 @@
-function [ FinalSampleModes ] = MeanshiftFindSampleModes( InputSamples, SamplesWeights )
+function [ FinalSampleModes, FinalSampleModeWeights ] = MeanshiftFindSampleModes( InputSamples, SamplesWeights )
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 % Use MeanShift method, calculate weighted sample modes.
@@ -7,9 +7,9 @@ function [ FinalSampleModes ] = MeanshiftFindSampleModes( InputSamples, SamplesW
 SampleDimension=size(InputSamples, 1);
 SamplesAmount=size(InputSamples, 2);
 WindowSize=zeros(SampleDimension,1);
-WindowSizeFactor=5;
+WindowSizeFactor=3;
 DistinctDistance=5;
-ConvergeStopDistance=0.5;
+ConvergeStopDistance=3;
 for i=1:SampleDimension
     WindowSize(i)=max((InputSamples(i,:))-min(InputSamples(i,:)))/WindowSizeFactor;
 end
@@ -17,38 +17,41 @@ end
 % Initial Mean positions as input samples.
 SampleModes=InputSamples;
 SampleModesAmount=size(SampleModes,2);
+SampleModeWeights=zeros(1,SampleModesAmount);
 %PreviousSampleModes=SampleModes;
 % For each initial sample mode, shift it till it converges.
 for i=1:SampleModesAmount
     while 1
-    % Collect samples inside the window
-    SamplesInWindow=[];
-    SamplesWeightInWindow=[];
-    for j=1:SamplesAmount
-        InWindow=true;
-        for k=1:SampleDimension
-            if abs(InputSamples(k,j)-SampleModes(:,i))>WindowSize(k)
-                InWindow=false;
-                break;
+        % Collect samples inside the window
+        SamplesInWindow=[];
+        SamplesWeightInWindow=[];
+        for j=1:SamplesAmount
+            InWindow=true;
+            for k=1:SampleDimension
+                if abs(InputSamples(k,j)-SampleModes(:,i))>WindowSize(k)
+                    InWindow=false;
+                    break;
+                end
+            end
+            if InWindow==true
+                SamplesInWindow=[SamplesInWindow,InputSamples(:,j)];
+                SamplesWeightInWindow=[SamplesWeightInWindow,SamplesWeights(j)];
             end
         end
-        if InWindow==true
-            SamplesInWindow=[SamplesInWindow,InputSamples(:,j)];
-            SamplesWeightInWindow=[SamplesWeightInWindow,SamplesWeights(j)];
+        % Calculate the weighted centroid inside this window
+        NormalizedWeightInWindow=SamplesWeightInWindow./sum(SamplesWeightInWindow);
+        NewSampleMode=SamplesInWindow*NormalizedWeightInWindow';
+        MeanShiftVector=NewSampleMode-SampleModes(:,i);
+        if norm(MeanShiftVector)<ConvergeStopDistance
+            break;
         end
-    end
-    % Calculate the weighted centroid inside this window
-    NormalizedWeightInWindow=SamplesWeightInWindow./sum(SamplesWeightInWindow);
-    NewSampleMode=SamplesInWindow*NormalizedWeightInWindow';
-    MeanShiftVector=NewSampleMode-SampleModes(:,i);
-    if norm(MeanShiftVector)<ConvergeStopDistance
-        break;
-    end
-    SampleModes(:,i)=NewSampleMode;
+        SampleModes(:,i)=NewSampleMode;
+        SampleModeWeights(i)=sum(SamplesWeightInWindow);
     end
 end
 % Combine similar sample modes
 FinalSampleModes=[];
+FinalSampleModeWeights=[];
 for i=1:SamplesAmount
     DistinctMode=true;
     for j=1:size(FinalSampleModes,2)
@@ -58,6 +61,7 @@ for i=1:SamplesAmount
     end
     if DistinctMode
         FinalSampleModes=[FinalSampleModes,SampleModes(:,i)];
+        FinalSampleModeWeights=[FinalSampleModeWeights,SampleModeWeights(i)];
     end
 end
 
