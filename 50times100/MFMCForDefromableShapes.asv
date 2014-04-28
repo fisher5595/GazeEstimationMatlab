@@ -53,7 +53,7 @@ Sigma1=10;
 Sigma2=pi/8;
 Sigma3=10;
 Sigma4=10;
-Sigma5=5;
+Sigma5=10;
 Resample_Sigma1=1;
 Resample_Sigma2=pi/16;
 Resample_Sigma3=1;
@@ -146,7 +146,7 @@ for iter=1:MaxIter
         for n=1:SampleAmount
             Message=Message+Iris_Samples_Old_Weight(n)*log(1/(2*pi)/Sigma4/Sigma1*exp(-(Up_BSamples(i)-2*Iris_Old_RSamples(n))^2/2/(Sigma1^2)-norm(Up_XeSamples(:,i)-Iris_Old_XcSamples(:,n),2)^2/2/(Sigma4^2)));
         end
-        Message=exp(Message*4);
+        Message=exp(Message);
         Up_Samples_NewWeight(i)=ObservationValue_UpParabola( EdgeMag, EdgeTheta, Up_XeSamples(:,i), Up_ThetaSamples(i), Up_ASamples(i), Up_BSamples(i))*Message/(1/(2*pi)/Sigma4/Sigma1*exp(-(Up_BSamples(i)-2*R)^2/2/(Sigma1^2)-norm(Up_XeSamples(:,i)-Xc,2)^2/2/(Sigma4^2)));
         if isnan(Up_Samples_NewWeight(i))
             disp('nan');
@@ -158,7 +158,7 @@ for iter=1:MaxIter
         for n=1:SampleAmount
             Message=Message+Iris_Samples_Old_Weight(n)*log(1/(2*pi)/Sigma4/Sigma1*exp(-(Low_BSamples(i)-2*Iris_Old_RSamples(n))^2/2/(Sigma1^2)-norm(Low_XeSamples(:,i)-Iris_Old_XcSamples(:,n),2)^2/2/(Sigma4^2)));
         end
-        Message=exp(Message*4);
+        Message=exp(Message);
         Low_Samples_NewWeight(i)=ObservationValue_LowParabola( EdgeMag, EdgeTheta, Low_XeSamples(:,i), Low_ThetaSamples(i), Low_CSamples(i), Low_BSamples(i))*Message/(1/(2*pi)/Sigma4/Sigma1*exp(-(Low_BSamples(i)-2*R)^2/2/(Sigma1^2)-norm(Low_XeSamples(:,i)-Xc,2)^2/2/(Sigma4^2)));
         if isnan(Low_Samples_NewWeight(i))
             disp('nan');
@@ -171,7 +171,7 @@ for iter=1:MaxIter
             Message=Message+Up_Samples_Old_Weight(n)*log(1/(2*pi)/Sigma4/Sigma1*exp(-(Up_Old_BSamples(n)-2*Iris_RSamples(i))^2/2/(Sigma1^2)-norm(Up_Old_XeSamples(:,n)-Iris_XcSamples(:,i),2)^2/2/(Sigma4^2)));
             Message=Message+Low_Samples_Old_Weight(n)*log(1/(2*pi)/Sigma4/Sigma1*exp(-(Low_Old_BSamples(n)-2*Iris_RSamples(n))^2/2/(Sigma1^2)-norm(Low_Old_XeSamples(:,n)-Iris_Old_XcSamples(:,i),2)^2/2/(Sigma4^2)));
         end
-        Message=exp(Message*4);
+        Message=exp(Message);
         Iris_Samples_NewWeight(i)=ObservationValue_Iris( EdgeMag, EdgeTheta, ImgCor2NewCor(Iris_XcSamples(:,i),Xe,Theta), Xe, Theta, Iris_RSamples(i))*Message/(1/(2*pi)/Sigma4/Sigma1*exp(-(B-2*Iris_RSamples(i))^2/2/(Sigma1^2)-norm(Xe-Iris_XcSamples(:,i),2)^2/2/(Sigma4^2)));
         if isnan(Iris_Samples_NewWeight(i))
             disp('nan');
@@ -255,20 +255,20 @@ for iter=1:MaxIter
 
     % Display results
     figure(iter);
-    subplot(2,2,1);
-    imshow(IniResultImg);
-    subplot(2,2,2);
-    imshow(ResultImg);
-    subplot(2,2,3);
-    imshow(EdgeMag./max(max(EdgeMag)));
-    subplot(2,2,4);
-    imshow(ResultOnEdge);
-%     scatter3(Up_ThetaSamples,Up_ASamples,Up_BSamples,'*');
-%     %axis([-4 5 -20 60 -20 100]);
-%     hold on;
-%     scatter3(Up_Samples_NewWeight,Up_XeSamples(1,:),Up_XeSamples(2,:),'ro');
-%     scatter3(Iris_RSamples,Iris_XcSamples(1,:),Iris_XcSamples(2,:),'go');
-%     hold off;
+%     subplot(2,2,1);
+%     imshow(IniResultImg);
+%     subplot(2,2,2);
+%     imshow(ResultImg);
+%     subplot(2,2,3);
+%     imshow(EdgeMag./max(max(EdgeMag)));
+%     subplot(2,2,4);
+%     imshow(ResultOnEdge);
+    scatter3(Up_ThetaSamples,Up_ASamples,Up_BSamples,'*');
+    axis([-4 5 -20 60 -20 100]);
+    hold on;
+    scatter3(Up_Samples_NewWeight,Up_XeSamples(1,:),Up_XeSamples(2,:),'ro');
+    scatter3(Iris_Samples_NewWeight,Iris_XcSamples(1,:),Iris_XcSamples(2,:),'go');_
+    hold off;
 end
 % End of loop body
 
