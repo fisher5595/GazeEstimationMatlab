@@ -53,7 +53,7 @@ Sigma1=10;
 Sigma2=pi/8;
 Sigma3=10;
 Sigma4=10;
-Sigma5=10;
+Sigma5=5;
 Resample_Sigma1=1;
 Resample_Sigma2=pi/16;
 Resample_Sigma3=1;
@@ -70,22 +70,33 @@ for iter=1:MaxIter
     % Importance sampling: Importance function can use the potential function.
     % Do the sampling using the expectation of parameters.
     if iter==1
-        % Up parabola samples
-        Up_XeSamples=double(zeros(2,SampleAmount));
-        Up_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
-        Up_XeSamples(1,:)=normrnd(Xc(1),Sigma1,1,SampleAmount);
-        Up_XeSamples(2,:)=normrnd(Xc(2),Sigma1,1,SampleAmount);
-        Up_ThetaSamples=normrnd(Theta,Sigma2,1,SampleAmount);
-        Up_ASamples=normrnd(A,Sigma3,1,SampleAmount);
-        Up_BSamples=normrnd(2*R,Sigma4,1,SampleAmount);
+%         % Up parabola samples
+%         Up_XeSamples=double(zeros(2,SampleAmount));
+%         Up_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
+%         Up_XeSamples(1,:)=normrnd(Xc(1),Sigma1,1,SampleAmount);
+%         Up_XeSamples(2,:)=normrnd(Xc(2),Sigma1,1,SampleAmount);
+%         Up_ThetaSamples=normrnd(Theta,Sigma2,1,SampleAmount);
+%         Up_ASamples=normrnd(A,Sigma3,1,SampleAmount);
+%         Up_BSamples=normrnd(2*R,Sigma4,1,SampleAmount);
+% 
+%         % Low parabola samples
+%         Low_XeSamples=Up_XeSamples;
+%         Low_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
+%         Low_ThetaSamples=Up_ThetaSamples;
+%         Low_CSamples=normrnd(C,Sigma3,1,SampleAmount);
+%         Low_BSamples=Up_BSamples;
 
-        % Low parabola samples
-        Low_XeSamples=Up_XeSamples;
-        Low_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
-        Low_ThetaSamples=Up_ThetaSamples;
-        Low_CSamples=normrnd(C,Sigma3,1,SampleAmount);
-        Low_BSamples=Up_BSamples;
-
+        % Outer contour, combined the upper parabola and the lower one
+        % together since their share same paramters
+        Contour_XeSamples=double(zeros(2,SampleAmount));
+        Contour_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
+        Contour_XeSamples(1,:)=normrnd(Xc(1),Sigma1,1,SampleAmount);
+        Contour_XeSamples(2,:)=normrnd(Xc(2),Sigma1,1,SampleAmount);
+        Contour_ThetaSamples=normrnd(Theta,Sigma2,1,SampleAmount);
+        Contour_ASamples=normrnd(A,Sigma3,1,SampleAmount);
+        Contour_BSamples=normrnd(2*R,Sigma4,1,SampleAmount);
+        Contour_CSamples=normrnd(C,Sigma3,1,SampleAmount);
+        
         % Iris circle samples
         Iris_XcSamples=double(zeros(2,SampleAmount));
         Iris_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
@@ -93,111 +104,142 @@ for iter=1:MaxIter
         Iris_XcSamples(2,:)=normrnd(Xe(2),Sigma1,1,SampleAmount);
         Iris_RSamples=normrnd(B/2,Sigma5,1,SampleAmount);
     else
-        % Up parabola samples
-        Up_XeSamples=double(zeros(2,SampleAmount));
-        Up_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
-        Up_XeSamples=GenerateSmaplesBasedOnWeights( Iris_Old_XcSamples, Iris_Samples_Old_Weight./sum(Iris_Samples_Old_Weight), Resample_Sigma1, SampleAmount);
-        Up_ThetaSamples=GenerateSmaplesBasedOnWeights(Up_Old_ThetaSamples, Up_Samples_Old_Weight./sum(Up_Samples_Old_Weight)/2+Low_Samples_Old_Weight./sum(Low_Samples_Old_Weight)/2, Resample_Sigma2, SampleAmount);
-        Up_ASamples=GenerateSmaplesBasedOnWeights(Up_Old_ASamples, Up_Samples_Old_Weight./sum(Up_Samples_Old_Weight), Resample_Sigma3, SampleAmount);
-        Up_BSamples=GenerateSmaplesBasedOnWeights(Iris_Old_RSamples.*2, Iris_Samples_Old_Weight./sum(Iris_Samples_Old_Weight), Resample_Sigma4, SampleAmount);
-
-        % Low parabola samples
-        Low_XeSamples=Up_XeSamples;
-        Low_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
-        Low_ThetaSamples=Up_ThetaSamples;
-        Low_CSamples=GenerateSmaplesBasedOnWeights(Low_Old_CSamples,Low_Samples_Old_Weight./sum(Low_Samples_Old_Weight), Resample_Sigma3, SampleAmount);
-        Low_BSamples=Up_BSamples;
-
+%         % Up parabola samples
+%         Up_XeSamples=double(zeros(2,SampleAmount));
+%         Up_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
+%         Up_XeSamples=GenerateSmaplesBasedOnWeights( Iris_Old_XcSamples, Iris_Samples_Old_Weight./sum(Iris_Samples_Old_Weight), Resample_Sigma1, SampleAmount);
+%         Up_ThetaSamples=GenerateSmaplesBasedOnWeights(Up_Old_ThetaSamples, Up_Samples_Old_Weight./sum(Up_Samples_Old_Weight)/2+Low_Samples_Old_Weight./sum(Low_Samples_Old_Weight)/2, Resample_Sigma2, SampleAmount);
+%         Up_ASamples=GenerateSmaplesBasedOnWeights(Up_Old_ASamples, Up_Samples_Old_Weight./sum(Up_Samples_Old_Weight), Resample_Sigma3, SampleAmount);
+%         Up_BSamples=GenerateSmaplesBasedOnWeights(Iris_Old_RSamples.*2, Iris_Samples_Old_Weight./sum(Iris_Samples_Old_Weight), Resample_Sigma4, SampleAmount);
+% 
+%         % Low parabola samples
+%         Low_XeSamples=Up_XeSamples;
+%         Low_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
+%         Low_ThetaSamples=Up_ThetaSamples;
+%         Low_CSamples=GenerateSmaplesBasedOnWeights(Low_Old_CSamples,Low_Samples_Old_Weight./sum(Low_Samples_Old_Weight), Resample_Sigma3, SampleAmount);
+%         Low_BSamples=Up_BSamples;
+        
+        % Outer contour, combined the upper parabola and the lower one
+        % together since their share same paramters
+        Contour_XeSamples=GenerateSmaplesBasedOnWeights( Iris_Old_XcSamples, Iris_Samples_Old_Weight./sum(Iris_Samples_Old_Weight), Resample_Sigma1, SampleAmount);
+        Contour_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
+        Contour_ThetaSamples=GenerateSmaplesBasedOnWeights(Contour_Old_ThetaSamples, Contour_Samples_Old_Weight./sum(Contour_Samples_Old_Weight), Resample_Sigma2, SampleAmount);
+        Contour_ASamples=GenerateSmaplesBasedOnWeights(Contour_Old_ASamples, Contour_Samples_Old_Weight./sum(Contour_Samples_Old_Weight), Resample_Sigma3, SampleAmount);
+        Contour_BSamples=GenerateSmaplesBasedOnWeights(Iris_Old_RSamples.*2, Iris_Samples_Old_Weight./sum(Iris_Samples_Old_Weight), Resample_Sigma4, SampleAmount);
+        Contour_CSamples=GenerateSmaplesBasedOnWeights(Contour_Old_CSamples,Contour_Samples_Old_Weight./sum(Contour_Samples_Old_Weight), Resample_Sigma3, SampleAmount);
+        
         % Iris circle samples
         Iris_XcSamples=double(zeros(2,SampleAmount));
         Iris_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
-        Iris_XcSamples=GenerateSmaplesBasedOnWeights( Up_Old_XeSamples, Up_Samples_Old_Weight./sum(Up_Samples_Old_Weight)/2+Low_Samples_Old_Weight./sum(Low_Samples_Old_Weight)/2, Resample_Sigma1, SampleAmount);
-        Iris_RSamples=GenerateSmaplesBasedOnWeights( Up_Old_BSamples./2,Up_Samples_Old_Weight./sum(Up_Samples_Old_Weight)/2+Low_Samples_Old_Weight./sum(Low_Samples_Old_Weight)/2, Resample_Sigma5, SampleAmount);
+        Iris_XcSamples=GenerateSmaplesBasedOnWeights( Contour_Old_XeSamples, Contour_Samples_Old_Weight./sum(Contour_Samples_Old_Weight), Resample_Sigma1, SampleAmount);
+        Iris_RSamples=GenerateSmaplesBasedOnWeights( Contour_Old_BSamples./2,Contour_Samples_Old_Weight./sum(Contour_Samples_Old_Weight), Resample_Sigma5, SampleAmount);
     end
 
     if iter==1
         % Assign old values
 
-        % Up parabola samples
-        Up_Old_XeSamples=Up_XeSamples;
-        Up_Samples_Old_Weight=Up_Samples_NewWeight;
-        Up_Old_ThetaSamples=Up_ThetaSamples;
-        Up_Old_ASamples=Up_ASamples;
-        Up_Old_BSamples=Up_BSamples;
+%         % Up parabola samples
+%         Up_Old_XeSamples=Up_XeSamples;
+%         Up_Samples_Old_Weight=Up_Samples_NewWeight;
+%         Up_Old_ThetaSamples=Up_ThetaSamples;
+%         Up_Old_ASamples=Up_ASamples;
+%         Up_Old_BSamples=Up_BSamples;
 
-        % Low parabola samples
-        Low_Old_XeSamples=Low_XeSamples;
-        Low_Samples_Old_Weight=Low_Samples_NewWeight;
-        Low_Old_ThetaSamples=Low_ThetaSamples;
-        Low_Old_CSamples=Low_CSamples;
-        Low_Old_BSamples=Low_BSamples;
+%         % Low parabola samples
+%         Low_Old_XeSamples=Low_XeSamples;
+%         Low_Samples_Old_Weight=Low_Samples_NewWeight;
+%         Low_Old_ThetaSamples=Low_ThetaSamples;
+%         Low_Old_CSamples=Low_CSamples;
+%         Low_Old_BSamples=Low_BSamples;
+        
+        % Outer contour, combined the upper parabola and the lower one
+        % together since their share same paramters
+        Contour_Old_XeSamples=Contour_XeSamples;
+        Contour_Old_ThetaSamples=Contour_ThetaSamples;
+        Contour_Old_ASamples=Contour_ASamples;
+        Contour_Old_BSamples=Contour_BSamples;
+        Contour_Old_CSamples=Contour_Old_CSamples;
+        Contour_Samples_Old_Weight=Contour_Samples_NewWeight;
 
         % Iris circle samples
         Iris_Old_XcSamples=Iris_XcSamples;
         Iris_Samples_Old_Weight=Iris_Samples_NewWeight;
         Iris_Old_RSamples=Iris_RSamples;
     end
+    
     % Re-weight: calculate weight, based on observation, messages and
     % importance value.
 
     for i=1:SampleAmount
-        % Up parabola
-        Message=0;
-        for n=1:SampleAmount
-            Message=Message+Iris_Samples_Old_Weight(n)*log(1/(2*pi)/Sigma4/Sigma1*exp(-(Up_BSamples(i)-2*Iris_Old_RSamples(n))^2/2/(Sigma1^2)-norm(Up_XeSamples(:,i)-Iris_Old_XcSamples(:,n),2)^2/2/(Sigma4^2)));
-        end
-        Message=exp(Message);
-        Up_Samples_NewWeight(i)=ObservationValue_UpParabola( EdgeMag, EdgeTheta, Up_XeSamples(:,i), Up_ThetaSamples(i), Up_ASamples(i), Up_BSamples(i))*Message/(1/(2*pi)/Sigma4/Sigma1*exp(-(Up_BSamples(i)-2*R)^2/2/(Sigma1^2)-norm(Up_XeSamples(:,i)-Xc,2)^2/2/(Sigma4^2)));
-        if isnan(Up_Samples_NewWeight(i))
-            disp('nan');
-            ObservationValue_UpParabola( EdgeMag, EdgeTheta, Up_XeSamples(:,i), Up_ThetaSamples(i), Up_ASamples(i), Up_BSamples(i));
-        end
+%         % Up parabola
+%         Message=0;
+%         for n=1:SampleAmount
+%             Message=Message+Iris_Samples_Old_Weight(n)*log(1/(2*pi)/Sigma4/Sigma1*exp(-(Up_BSamples(i)-2*Iris_Old_RSamples(n))^2/2/(Sigma1^2)-norm(Up_XeSamples(:,i)-Iris_Old_XcSamples(:,n),2)^2/2/(Sigma4^2)));
+%         end
+%         Message=exp(Message*4);
+%         Up_Samples_NewWeight(i)=ObservationValue_UpParabola( EdgeMag, EdgeTheta, Up_XeSamples(:,i), Up_ThetaSamples(i), Up_ASamples(i), Up_BSamples(i))*Message/(1/(2*pi)/Sigma4/Sigma1*exp(-(Up_BSamples(i)-2*R)^2/2/(Sigma1^2)-norm(Up_XeSamples(:,i)-Xc,2)^2/2/(Sigma4^2)));
+%         if isnan(Up_Samples_NewWeight(i))
+%             disp('nan');
+%             ObservationValue_UpParabola( EdgeMag, EdgeTheta, Up_XeSamples(:,i), Up_ThetaSamples(i), Up_ASamples(i), Up_BSamples(i));
+%         end
+%         
+%         % Low parabola
+%         Message=0;
+%         for n=1:SampleAmount
+%             Message=Message+Iris_Samples_Old_Weight(n)*log(1/(2*pi)/Sigma4/Sigma1*exp(-(Low_BSamples(i)-2*Iris_Old_RSamples(n))^2/2/(Sigma1^2)-norm(Low_XeSamples(:,i)-Iris_Old_XcSamples(:,n),2)^2/2/(Sigma4^2)));
+%         end
+%         Message=exp(Message*4);
+%         Low_Samples_NewWeight(i)=ObservationValue_LowParabola( EdgeMag, EdgeTheta, Low_XeSamples(:,i), Low_ThetaSamples(i), Low_CSamples(i), Low_BSamples(i))*Message/(1/(2*pi)/Sigma4/Sigma1*exp(-(Low_BSamples(i)-2*R)^2/2/(Sigma1^2)-norm(Low_XeSamples(:,i)-Xc,2)^2/2/(Sigma4^2)));
+%         if isnan(Low_Samples_NewWeight(i))
+%             disp('nan');
+%             ObservationValue_LowParabola( EdgeMag, EdgeTheta, Low_XeSamples(:,i), Low_ThetaSamples(i), Low_CSamples(i), Low_BSamples(i));
+%         end
         
-        % Low parabola
+        % Contour: Combining up parabola and low one.
         Message=0;
         for n=1:SampleAmount
-            Message=Message+Iris_Samples_Old_Weight(n)*log(1/(2*pi)/Sigma4/Sigma1*exp(-(Low_BSamples(i)-2*Iris_Old_RSamples(n))^2/2/(Sigma1^2)-norm(Low_XeSamples(:,i)-Iris_Old_XcSamples(:,n),2)^2/2/(Sigma4^2)));
+            Message=Message+Iris_Samples_Old_Weight(n)*log(1/(2*pi)/Sigma4/Sigma1*exp(-(Contour_BSamples(i)-2*Iris_Old_RSamples(n))^2/2/(Sigma1^2)-norm(Contour_XeSamples(:,i)-Iris_Old_XcSamples(:,n),2)^2/2/(Sigma4^2)));
         end
-        Message=exp(Message);
-        Low_Samples_NewWeight(i)=ObservationValue_LowParabola( EdgeMag, EdgeTheta, Low_XeSamples(:,i), Low_ThetaSamples(i), Low_CSamples(i), Low_BSamples(i))*Message/(1/(2*pi)/Sigma4/Sigma1*exp(-(Low_BSamples(i)-2*R)^2/2/(Sigma1^2)-norm(Low_XeSamples(:,i)-Xc,2)^2/2/(Sigma4^2)));
-        if isnan(Low_Samples_NewWeight(i))
+        Message=exp(Message*4);
+        Contour_Samples_NewWeight(i)=ObservationValue_Contour( EdgeMag, EdgeTheta, Contour_XeSamples(:,i), Contour_ThetaSamples(i), Contour_ASamples(i), Contour_BSamples(i), Contour_CSamples(i))*Message/(1/(2*pi)/Sigma4/Sigma1*exp(-(Contour_BSamples(i)-2*R)^2/2/(Sigma1^2)-norm(Contour_XeSamples(:,i)-Xc,2)^2/2/(Sigma4^2)));
+        if isnan(Contour_Samples_NewWeight(i))
             disp('nan');
-            ObservationValue_LowParabola( EdgeMag, EdgeTheta, Low_XeSamples(:,i), Low_ThetaSamples(i), Low_CSamples(i), Low_BSamples(i));
+            ObservationValue_Contour( EdgeMag, EdgeTheta, Contour_XeSamples(:,i), Contour_ThetaSamples(i), Contour_ASamples(i), Contour_BSamples(i), Contour_CSamples(i));
         end
         
         % Iris circle
         Message=0;
         for n=1:SampleAmount
-            Message=Message+Up_Samples_Old_Weight(n)*log(1/(2*pi)/Sigma4/Sigma1*exp(-(Up_Old_BSamples(n)-2*Iris_RSamples(i))^2/2/(Sigma1^2)-norm(Up_Old_XeSamples(:,n)-Iris_XcSamples(:,i),2)^2/2/(Sigma4^2)));
-            Message=Message+Low_Samples_Old_Weight(n)*log(1/(2*pi)/Sigma4/Sigma1*exp(-(Low_Old_BSamples(n)-2*Iris_RSamples(n))^2/2/(Sigma1^2)-norm(Low_Old_XeSamples(:,n)-Iris_Old_XcSamples(:,i),2)^2/2/(Sigma4^2)));
+            Message=Message+Contour_Samples_Old_Weight(n)*log(1/(2*pi)/Sigma4/Sigma1*exp(-(Contour_Old_BSamples(n)-2*Iris_RSamples(i))^2/2/(Sigma1^2)-norm(Contour_Old_XeSamples(:,n)-Iris_XcSamples(:,i),2)^2/2/(Sigma4^2)));
         end
-        Message=exp(Message);
+        Message=exp(Message*4);
         Iris_Samples_NewWeight(i)=ObservationValue_Iris( EdgeMag, EdgeTheta, ImgCor2NewCor(Iris_XcSamples(:,i),Xe,Theta), Xe, Theta, Iris_RSamples(i))*Message/(1/(2*pi)/Sigma4/Sigma1*exp(-(B-2*Iris_RSamples(i))^2/2/(Sigma1^2)-norm(Xe-Iris_XcSamples(:,i),2)^2/2/(Sigma4^2)));
         if isnan(Iris_Samples_NewWeight(i))
             disp('nan');
             ObservationValue_Iris( EdgeMag, EdgeTheta, Iris_XcSamples(:,i), Xe, Theta, Iris_RSamples(i));
         end
     end
-    Xe=(Up_XeSamples*Up_Samples_NewWeight'+Low_XeSamples*Low_Samples_NewWeight')/(sum(Up_Samples_NewWeight)+sum(Low_Samples_NewWeight));
-    Theta=(Up_ThetaSamples*Up_Samples_NewWeight'+Low_ThetaSamples*Low_Samples_NewWeight')/(sum(Up_Samples_NewWeight)+sum(Low_Samples_NewWeight));
-    B=(Up_BSamples*Up_Samples_NewWeight'+Low_BSamples*Low_Samples_NewWeight')/(sum(Up_Samples_NewWeight)+sum(Low_Samples_NewWeight));
+    Xe=(Contour_XeSamples*Contour_Samples_NewWeight')/sum(Contour_Samples_NewWeight);
+    Theta=(Contour_ThetaSamples*Contour_Samples_NewWeight')/sum(Contour_Samples_NewWeight);
+    B=(Contour_BSamples*Contour_Samples_NewWeight')/sum(Contour_Samples_NewWeight);
     % Normalize weight
-    Up_Samples_NewWeight=Up_Samples_NewWeight./sum(Up_Samples_NewWeight);
-    Low_Samples_NewWeight=Low_Samples_NewWeight./sum(Low_Samples_NewWeight);
+    Contour_Samples_NewWeight=Contour_Samples_NewWeight./sum(Contour_Samples_NewWeight);
     Iris_Samples_NewWeight=Iris_Samples_NewWeight./sum(Iris_Samples_NewWeight);
     
     % Meanshift analysis
-    [Up_SampleModes,Up_SampleModesWeight]=MeanshiftFindSampleModes([Up_XeSamples;Up_ThetaSamples;Up_ASamples;Up_BSamples], Up_Samples_NewWeight);
-    [Low_SampleModes,Low_SampleModesWeight]=MeanshiftFindSampleModes([Low_XeSamples;Low_ThetaSamples;Low_CSamples;Low_BSamples], Low_Samples_NewWeight);
+%     [Up_SampleModes,Up_SampleModesWeight]=MeanshiftFindSampleModes([Up_XeSamples;Up_ThetaSamples;Up_ASamples;Up_BSamples], Up_Samples_NewWeight);
+%     [Low_SampleModes,Low_SampleModesWeight]=MeanshiftFindSampleModes([Low_XeSamples;Low_ThetaSamples;Low_CSamples;Low_BSamples], Low_Samples_NewWeight);
+    [Contour_SampleModes,Contour_SampleModesWeight]=MeanshiftFindSampleModes([Contour_XeSamples;Contour_ThetaSamples;Contour_ASamples;Contour_BSamples;Contour_CSamples], Contour_Samples_NewWeight);
     [Iris_SampleModes,Iris_SampleModesWeight]=MeanshiftFindSampleModes([Iris_XcSamples;Iris_RSamples], Up_Samples_NewWeight);
-    [Up_SampleModeMaxWeight,Up_SampleModeMaxIndex]=max(Up_SampleModesWeight);
-    [Low_SampleModeMaxWeight,Low_SampleModeMaxIndex]=max(Low_SampleModesWeight);
+%     [Up_SampleModeMaxWeight,Up_SampleModeMaxIndex]=max(Up_SampleModesWeight);
+%     [Low_SampleModeMaxWeight,Low_SampleModeMaxIndex]=max(Low_SampleModesWeight);
+    [Contour_SampleModeMaxWeight,Contour_SampleModeMaxIndex]=max(Contour_SampleModesWeight);
     [Iris_SampleModeMaxWeight,Iris_SampleModeMaxIndex]=max(Iris_SampleModesWeight);
-    Xe=(Up_SampleModes(1:2,Up_SampleModeMaxIndex)*Up_SampleModeMaxWeight+Low_SampleModes(1:2,Low_SampleModeMaxIndex)*Low_SampleModeMaxWeight)/(Up_SampleModeMaxWeight+Low_SampleModeMaxWeight);
-    Theta=(Up_SampleModes(3,Up_SampleModeMaxIndex)*Up_SampleModeMaxWeight+Low_SampleModes(3,Low_SampleModeMaxIndex)*Low_SampleModeMaxWeight)/(Up_SampleModeMaxWeight+Low_SampleModeMaxWeight);
-    B=(Up_SampleModes(5,Up_SampleModeMaxIndex)*Up_SampleModeMaxWeight+Low_SampleModes(5,Low_SampleModeMaxIndex)*Low_SampleModeMaxWeight)/(Up_SampleModeMaxWeight+Low_SampleModeMaxWeight);
-    A=Up_SampleModes(4,Up_SampleModeMaxIndex);
-    C=Low_SampleModes(4,Low_SampleModeMaxIndex);
+    Xe=Contour_SampleModes(1:2,Contour_SampleModeMaxIndex);
+    Theta=Contour_SampleModes(3,Contour_SampleModeMaxIndex);
+    B=Contour_SampleModes(5,Contour_SampleModeMaxIndex);
+    A=Contour_SampleModes(4,Contour_SampleModeMaxIndex);
+    C=Contour_SampleModes(6,Low_SampleModeMaxIndex);
     Xc=Iris_SampleModes(1:2,Iris_SampleModeMaxIndex);
     R=Iris_SampleModes(3,Iris_SampleModeMaxIndex);
 
@@ -222,19 +264,27 @@ for iter=1:MaxIter
 
     % Assign old values
 
-    % Up parabola samples
-    Up_Old_XeSamples=Up_XeSamples;
-    Up_Samples_Old_Weight=Up_Samples_NewWeight;
-    Up_Old_ThetaSamples=Up_ThetaSamples;
-    Up_Old_ASamples=Up_ASamples;
-    Up_Old_BSamples=Up_BSamples;
-
-    % Low parabola samples
-    Low_Old_XeSamples=Low_XeSamples;
-    Low_Samples_Old_Weight=Low_Samples_NewWeight;
-    Low_Old_ThetaSamples=Low_ThetaSamples;
-    Low_Old_CSamples=Low_CSamples;
-    Low_Old_BSamples=Low_BSamples;
+%     % Up parabola samples
+%     Up_Old_XeSamples=Up_XeSamples;
+%     Up_Samples_Old_Weight=Up_Samples_NewWeight;
+%     Up_Old_ThetaSamples=Up_ThetaSamples;
+%     Up_Old_ASamples=Up_ASamples;
+%     Up_Old_BSamples=Up_BSamples;
+% 
+%     % Low parabola samples
+%     Low_Old_XeSamples=Low_XeSamples;
+%     Low_Samples_Old_Weight=Low_Samples_NewWeight;
+%     Low_Old_ThetaSamples=Low_ThetaSamples;
+%     Low_Old_CSamples=Low_CSamples;
+%     Low_Old_BSamples=Low_BSamples;
+    
+    % Contour samples
+    Contour_Old_XeSamples=Contour_XeSamples;
+    Contour_Samples_Old_Weight=Contour_Samples_NewWeight;
+    Contour_Old_ThetaSamples=Contour_ThetaSamples;
+    Contour_Old_CSamples=Contour_CSamples;
+    Contour_Old_BSamples=Contour_BSamples;
+    Contour_Old_ASamples=Contour_ASamples;
 
     % Iris circle samples
     Iris_Old_XcSamples=Iris_XcSamples;
@@ -255,20 +305,20 @@ for iter=1:MaxIter
 
     % Display results
     figure(iter);
-%     subplot(2,2,1);
-%     imshow(IniResultImg);
-%     subplot(2,2,2);
-%     imshow(ResultImg);
-%     subplot(2,2,3);
-%     imshow(EdgeMag./max(max(EdgeMag)));
-%     subplot(2,2,4);
-%     imshow(ResultOnEdge);
-    scatter3(Up_ThetaSamples,Up_ASamples,Up_BSamples,'*');
-    axis([-4 5 -20 60 -20 100]);
-    hold on;
-    scatter3(Up_Samples_NewWeight,Up_XeSamples(1,:),Up_XeSamples(2,:),'ro');
-    scatter3(Iris_Samples_NewWeight,Iris_XcSamples(1,:),Iris_XcSamples(2,:),'go');_
-    hold off;
+    subplot(2,2,1);
+    imshow(IniResultImg);
+    subplot(2,2,2);
+    imshow(ResultImg);
+    subplot(2,2,3);
+    imshow(EdgeMag./max(max(EdgeMag)));
+    subplot(2,2,4);
+    imshow(ResultOnEdge);
+%     scatter3(Up_ThetaSamples,Up_ASamples,Up_BSamples,'*');
+%     %axis([-4 5 -20 60 -20 100]);
+%     hold on;
+%     scatter3(Up_Samples_NewWeight,Up_XeSamples(1,:),Up_XeSamples(2,:),'ro');
+%     scatter3(Iris_RSamples,Iris_XcSamples(1,:),Iris_XcSamples(2,:),'go');
+%     hold off;
 end
 % End of loop body
 
