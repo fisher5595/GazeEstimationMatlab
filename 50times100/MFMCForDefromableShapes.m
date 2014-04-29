@@ -233,15 +233,15 @@ for iter=1:MaxIter
     [Iris_SampleModes,Iris_SampleModesWeight]=MeanshiftFindSampleModes([Iris_XcSamples;Iris_RSamples], Iris_Samples_NewWeight);
 %     [Up_SampleModeMaxWeight,Up_SampleModeMaxIndex]=max(Up_SampleModesWeight);
 %     [Low_SampleModeMaxWeight,Low_SampleModeMaxIndex]=max(Low_SampleModesWeight);
-    [Contour_SampleModeMaxWeight,Contour_SampleModeMaxIndex]=max(Contour_SampleModesWeight);
-    [Iris_SampleModeMaxWeight,Iris_SampleModeMaxIndex]=max(Iris_SampleModesWeight);
-    Xe=Contour_SampleModes(1:2,Contour_SampleModeMaxIndex);
-    Theta=Contour_SampleModes(3,Contour_SampleModeMaxIndex);
-    B=Contour_SampleModes(5,Contour_SampleModeMaxIndex);
-    A=Contour_SampleModes(4,Contour_SampleModeMaxIndex);
-    C=Contour_SampleModes(6,Contour_SampleModeMaxIndex);
-    Xc=Iris_SampleModes(1:2,Iris_SampleModeMaxIndex);
-    R=Iris_SampleModes(3,Iris_SampleModeMaxIndex);
+%     [Contour_SampleModeMaxWeight,Contour_SampleModeMaxIndex]=max(Contour_SampleModesWeight);
+%     [Iris_SampleModeMaxWeight,Iris_SampleModeMaxIndex]=max(Iris_SampleModesWeight);
+    Xe=Contour_SampleModes(1:2,1);
+    Theta=Contour_SampleModes(3,1);
+    B=Contour_SampleModes(5,1);
+    A=Contour_SampleModes(4,1);
+    C=Contour_SampleModes(6,1);
+    Xc=Iris_SampleModes(1:2,1);
+    R=Iris_SampleModes(3,1);
 
     % Get new expectation
 %     Up_Xe_Exp=Up_XeSamples*Up_Samples_NewWeight';

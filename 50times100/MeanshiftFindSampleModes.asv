@@ -1,4 +1,4 @@
-function [ SortedFinalSampleModes, SortedFinalSampleModeWeights ] = MeanshiftFindSampleModes( InputSamples, SamplesWeights )
+function [ FinalSampleModes, FinalSampleModeWeights ] = MeanshiftFindSampleModes( InputSamples, SamplesWeights )
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 % Use MeanShift method, calculate weighted sample modes.
@@ -43,8 +43,6 @@ for i=1:SampleModesAmount
         NewSampleMode=SamplesInWindow*NormalizedWeightInWindow';
         MeanShiftVector=NewSampleMode-SampleModes(:,i);
         if norm(MeanShiftVector)<ConvergeStopDistance
-            SampleModes(:,i)=NewSampleMode;
-            SampleModeWeights(i)=sum(SamplesWeightInWindow);
             break;
         end
         SampleModes(:,i)=NewSampleMode;
@@ -68,10 +66,9 @@ for i=1:SamplesAmount
         FinalSampleModeWeights=[FinalSampleModeWeights,SampleModeWeights(i)];
     end
 end
-SortedFinalSampleModesAndWeights=sortrows([FinalSampleModes;FinalSampleModeWeights]',-(SampleDimension+1));
+SortedFinalSampleModesAndWeights=sortrows([FinalSampleModes;FinalSampleModeWeights]',size(FinalSampleModes,1)+1);
 SortedFinalSampleModesAndWeights=SortedFinalSampleModesAndWeights';
-SortedFinalSampleModes=SortedFinalSampleModesAndWeights(1:SampleDimension,:);
-SortedFinalSampleModeWeights=SortedFinalSampleModesAndWeights(SampleDimension+1,:);
+SortedFinalSampleModes=
 
 end
 
