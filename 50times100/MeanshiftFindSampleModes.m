@@ -59,7 +59,6 @@ for i=1:SamplesAmount
     for j=1:size(FinalSampleModes,2)
         if norm(SampleModes(:,i)-FinalSampleModes(:,j))<DistinctDistance
             DistinctMode=false;
-            FinalSampleModeWeights(j)=FinalSampleModeWeights(j)+SampleModeWeights(i);
             break;
         end
     end
