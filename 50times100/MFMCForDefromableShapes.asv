@@ -54,11 +54,11 @@ Sigma2=pi/8;
 Sigma3=10;
 Sigma4=10;
 Sigma5=5;
-Resample_Sigma1=1;
+Resample_Sigma1=2;
 Resample_Sigma2=pi/16;
-Resample_Sigma3=1;
-Resample_Sigma4=1;
-Resample_Sigma5=1;
+Resample_Sigma3=2;
+Resample_Sigma4=2;
+Resample_Sigma5=2;
 IniResultImg=uint8(zeros(size(Img,1),size(Img,2),3));
 IniResultImg(:,:,1)=Img;
 IniResultImg(:,:,2)=Img;
@@ -121,11 +121,11 @@ for iter=1:MaxIter
         
         % Outer contour, combined the upper parabola and the lower one
         % together since their share same paramters
-        Contour_XeSamples=GenerateSmaplesBasedOnWeights( Iris_Old_XcSamples, Iris_Samples_Old_Weight./sum(Iris_Samples_Old_Weight), Resample_Sigma1, SampleAmount);
+        Contour_XeSamples=GenerateSmaplesBasedOnWeights( Contour_Old_XeSamples, Contour_Samples_Old_Weight./sum(Contour_Samples_Old_Weight), Resample_Sigma1, SampleAmount);
         Contour_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
         Contour_ThetaSamples=GenerateSmaplesBasedOnWeights(Contour_Old_ThetaSamples, Contour_Samples_Old_Weight./sum(Contour_Samples_Old_Weight), Resample_Sigma2, SampleAmount);
         Contour_ASamples=GenerateSmaplesBasedOnWeights(Contour_Old_ASamples, Contour_Samples_Old_Weight./sum(Contour_Samples_Old_Weight), Resample_Sigma3, SampleAmount);
-        Contour_BSamples=GenerateSmaplesBasedOnWeights(Iris_Old_RSamples.*2, Iris_Samples_Old_Weight./sum(Iris_Samples_Old_Weight), Resample_Sigma4, SampleAmount);
+        Contour_BSamples=GenerateSmaplesBasedOnWeights(Contour_Old_BSamples, Contour_Samples_Old_Weight./sum(Contour_Samples_Old_Weight), Resample_Sigma4, SampleAmount);
         Contour_CSamples=GenerateSmaplesBasedOnWeights(Contour_Old_CSamples,Contour_Samples_Old_Weight./sum(Contour_Samples_Old_Weight), Resample_Sigma3, SampleAmount);
         
         % Iris circle samples
@@ -158,7 +158,7 @@ for iter=1:MaxIter
         Contour_Old_ThetaSamples=Contour_ThetaSamples;
         Contour_Old_ASamples=Contour_ASamples;
         Contour_Old_BSamples=Contour_BSamples;
-        Contour_Old_CSamples=Contour_Old_CSamples;
+        Contour_Old_CSamples=Contour_CSamples;
         Contour_Samples_Old_Weight=Contour_Samples_NewWeight;
 
         % Iris circle samples
@@ -230,18 +230,18 @@ for iter=1:MaxIter
 %     [Up_SampleModes,Up_SampleModesWeight]=MeanshiftFindSampleModes([Up_XeSamples;Up_ThetaSamples;Up_ASamples;Up_BSamples], Up_Samples_NewWeight);
 %     [Low_SampleModes,Low_SampleModesWeight]=MeanshiftFindSampleModes([Low_XeSamples;Low_ThetaSamples;Low_CSamples;Low_BSamples], Low_Samples_NewWeight);
     [Contour_SampleModes,Contour_SampleModesWeight]=MeanshiftFindSampleModes([Contour_XeSamples;Contour_ThetaSamples;Contour_ASamples;Contour_BSamples;Contour_CSamples], Contour_Samples_NewWeight);
-    [Iris_SampleModes,Iris_SampleModesWeight]=MeanshiftFindSampleModes([Iris_XcSamples;Iris_RSamples], Up_Samples_NewWeight);
+    [Iris_SampleModes,Iris_SampleModesWeight]=MeanshiftFindSampleModes([Iris_XcSamples;Iris_RSamples], Iris_Samples_NewWeight);
 %     [Up_SampleModeMaxWeight,Up_SampleModeMaxIndex]=max(Up_SampleModesWeight);
 %     [Low_SampleModeMaxWeight,Low_SampleModeMaxIndex]=max(Low_SampleModesWeight);
-    [Contour_SampleModeMaxWeight,Contour_SampleModeMaxIndex]=max(Contour_SampleModesWeight);
-    [Iris_SampleModeMaxWeight,Iris_SampleModeMaxIndex]=max(Iris_SampleModesWeight);
-    Xe=Contour_SampleModes(1:2,Contour_SampleModeMaxIndex);
-    Theta=Contour_SampleModes(3,Contour_SampleModeMaxIndex);
-    B=Contour_SampleModes(5,Contour_SampleModeMaxIndex);
-    A=Contour_SampleModes(4,Contour_SampleModeMaxIndex);
-    C=Contour_SampleModes(6,Low_SampleModeMaxIndex);
-    Xc=Iris_SampleModes(1:2,Iris_SampleModeMaxIndex);
-    R=Iris_SampleModes(3,Iris_SampleModeMaxIndex);
+%     [Contour_SampleModeMaxWeight,Contour_SampleModeMaxIndex]=max(Contour_SampleModesWeight);
+%     [Iris_SampleModeMaxWeight,Iris_SampleModeMaxIndex]=max(Iris_SampleModesWeight);
+    Xe=Contour_SampleModes(1:2,1);
+    Theta=Contour_SampleModes(3,1);
+    B=Contour_SampleModes(5,1);
+    A=Contour_SampleModes(4,1);
+    C=Contour_SampleModes(6,1);
+    Xc=Iris_SampleModes(1:2,1);
+    R=Iris_SampleModes(3,1);
 
     % Get new expectation
 %     Up_Xe_Exp=Up_XeSamples*Up_Samples_NewWeight';
