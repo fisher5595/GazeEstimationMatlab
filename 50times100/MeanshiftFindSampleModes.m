@@ -28,7 +28,7 @@ for i=1:SampleModesAmount
         for j=1:SamplesAmount
             InWindow=true;
             for k=1:SampleDimension
-                if abs(InputSamples(k,j)-SampleModes(:,i))>WindowSize(k)
+                if abs(InputSamples(k,j)-SampleModes(k,i))>WindowSize(k)
                     InWindow=false;
                     break;
                 end
