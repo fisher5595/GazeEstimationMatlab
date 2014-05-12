@@ -134,6 +134,7 @@ for iter=1:MaxIter
         Contour_ThetaSamples=GenerateSmaplesBasedOnWeights(Contour_Old_ThetaSamples, Contour_Samples_Old_Weight./sum(Contour_Samples_Old_Weight), Resample_Sigma2, SampleAmount);
         Contour_ASamples=GenerateSmaplesBasedOnWeights(Contour_Old_ASamples, Contour_Samples_Old_Weight./sum(Contour_Samples_Old_Weight), Resample_Sigma3, SampleAmount);
         Contour_BSamples=GenerateSmaplesBasedOnWeights(Iris_Old_RSamples.*2, Iris_Samples_Old_Weight./sum(Iris_Samples_Old_Weight), Resample_Sigma4, SampleAmount);
+        Contour_BSamples=ones(1,SampleAmount).*B;
         Contour_CSamples=GenerateSmaplesBasedOnWeights(Contour_Old_CSamples,Contour_Samples_Old_Weight./sum(Contour_Samples_Old_Weight), Resample_Sigma3, SampleAmount);
         
         % Iris circle samples
@@ -144,6 +145,7 @@ for iter=1:MaxIter
         Iris_XcSamples(1,:)=normrnd(Transformed_Xc(1),Sigma1,1,SampleAmount);
         Iris_XcSamples(2,:)=normrnd(Transformed_Xc(2),Sigma1,1,SampleAmount);
         Iris_RSamples=GenerateSmaplesBasedOnWeights( Contour_Old_BSamples./2,Contour_Samples_Old_Weight./sum(Contour_Samples_Old_Weight), Resample_Sigma5, SampleAmount);
+        Iris_RSamples=ones(1,SampleAmount).*R;
     end
 
     if iter==1
