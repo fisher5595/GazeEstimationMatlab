@@ -245,7 +245,7 @@ for iter=1:MaxIter
             ConstrainBR=0;
         end
         for n=1:SampleAmount
-            Message=Message+Contour_Samples_Old_Weight(n)*log(1/(ConstrainBR_Weight)/(sqrt(2*pi)*Sigma1)*exp(-(Contour_Old_BSamples(n)-2*Iris_RSamples(i))^2/2/(Sigma4^2)*ConstrainBR-norm(TransformMatrix_Xc2Xe\Contour_Old_XeSamples(:,n)-Iris_XcSamples(:,i),2)^2/2/(Sigma1^2)));
+            Message=Message+Contour_Samples_Old_Weight(n)*log(1/(2*pi)/(Sigma4*ConstrainBR_Weight)/Sigma1*exp(-(Contour_Old_BSamples(n)-2*Iris_RSamples(i))^2/2/(Sigma4^2)*ConstrainBR-norm(TransformMatrix_Xc2Xe\Contour_Old_XeSamples(:,n)-Iris_XcSamples(:,i),2)^2/2/(Sigma1^2)));
         end
         Message=exp(Message*4);
         if iter==0
@@ -253,7 +253,7 @@ for iter=1:MaxIter
         else
             TmpRefCenter=Transformed_Xc;
         end
-        Iris_Samples_NewWeight(i)=ObservationValue_Iris( EdgeMag, EdgeTheta, ImgCor2NewCor(Iris_XcSamples(:,i),Xe,Theta), Xe, Theta, Iris_RSamples(i))*Message/(1/(ConstrainBR_Weight)/(sqrt(2*pi)*Sigma1)*exp(-(B-2*Iris_RSamples(i))^2/2/(Sigma4^2)*ConstrainBR-norm(TmpRefCenter-Iris_XcSamples(:,i),2)^2/2/(Sigma1^2)));
+        Iris_Samples_NewWeight(i)=ObservationValue_Iris( EdgeMag, EdgeTheta, ImgCor2NewCor(Iris_XcSamples(:,i),Xe,Theta), Xe, Theta, Iris_RSamples(i))*Message/(1/(2*pi)/(Sigma4*ConstrainBR_Weight)/Sigma1*exp(-(B-2*Iris_RSamples(i))^2/2/(Sigma4^2)*ConstrainBR-norm(TmpRefCenter-Iris_XcSamples(:,i),2)^2/2/(Sigma1^2)));
         if isnan(Iris_Samples_NewWeight(i))
             disp('nan');
             ObservationValue_Iris( EdgeMag, EdgeTheta, Iris_XcSamples(:,i), Xe, Theta, Iris_RSamples(i));
