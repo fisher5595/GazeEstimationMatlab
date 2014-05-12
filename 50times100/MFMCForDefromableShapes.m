@@ -95,8 +95,8 @@ for iter=1:MaxIter
         % together since their share same paramters
         Contour_XeSamples=double(zeros(2,SampleAmount));
         Contour_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
-        Contour_XeSamples(1,:)=normrnd(Xc(1),Sigma1,1,SampleAmount);
-        Contour_XeSamples(2,:)=normrnd(Xc(2),Sigma1,1,SampleAmount);
+        Contour_XeSamples(1,:)=normrnd(Transformed_Xe(1),Sigma1,1,SampleAmount);
+        Contour_XeSamples(2,:)=normrnd(Transformed_Xe(2),Sigma1,1,SampleAmount);
         Contour_ThetaSamples=normrnd(Theta,Sigma2,1,SampleAmount);
         Contour_ASamples=normrnd(A,Sigma3,1,SampleAmount);
         Contour_BSamples=normrnd(2*R,Sigma4,1,SampleAmount);
@@ -105,8 +105,8 @@ for iter=1:MaxIter
         % Iris circle samples
         Iris_XcSamples=double(zeros(2,SampleAmount));
         Iris_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
-        Iris_XcSamples(1,:)=normrnd(Xe(1),Sigma1,1,SampleAmount);
-        Iris_XcSamples(2,:)=normrnd(Xe(2),Sigma1,1,SampleAmount);
+        Iris_XcSamples(1,:)=normrnd(Transformed_Xc(1),Sigma1,1,SampleAmount);
+        Iris_XcSamples(2,:)=normrnd(Transformed_Xc(2),Sigma1,1,SampleAmount);
         Iris_RSamples=normrnd(B/2,Sigma5,1,SampleAmount);
     else
 %         % Up parabola samples
@@ -214,7 +214,7 @@ for iter=1:MaxIter
             Message=Message+Iris_Samples_Old_Weight(n)*log(1/(2*pi)/Sigma4/Sigma1*exp(-(Contour_BSamples(i)-2*Iris_Old_RSamples(n))^2/2/(Sigma1^2)-norm(Contour_XeSamples(:,i)-TransformMatrix_Xc2Xe*Iris_Old_XcSamples(:,n),2)^2/2/(Sigma4^2)));
         end
         Message=exp(Message*4);
-        if iter==1
+        if iter==0
             TmpRefCenter=Xc;
         else
             TmpRefCenter=Transformed_Xe;
@@ -231,12 +231,12 @@ for iter=1:MaxIter
             Message=Message+Contour_Samples_Old_Weight(n)*log(1/(2*pi)/Sigma4/Sigma1*exp(-(Contour_Old_BSamples(n)-2*Iris_RSamples(i))^2/2/(Sigma1^2)-norm(TransformMatrix_Xc2Xe\Contour_Old_XeSamples(:,n)-Iris_XcSamples(:,i),2)^2/2/(Sigma4^2)));
         end
         Message=exp(Message*4);
-        if iter==1
+        if iter==0
             TmpRefCenter=Xe;
         else
             TmpRefCenter=Transformed_Xc;
         end
-        Iris_Samples_NewWeight(i)=ObservationValue_Iris( EdgeMag, EdgeTheta, ImgCor2NewCor(Iris_XcSamples(:,i),Xe,Theta), Xe, Theta, Iris_RSamples(i))*Message/(1/(2*pi)/Sigma4/Sigma1*exp(-(B-2*Iris_RSamples(i))^2/2/(Sigma1^2)-norm(Transformed_Xc-Iris_XcSamples(:,i),2)^2/2/(Sigma4^2)));
+        Iris_Samples_NewWeight(i)=ObservationValue_Iris( EdgeMag, EdgeTheta, ImgCor2NewCor(Iris_XcSamples(:,i),Xe,Theta), Xe, Theta, Iris_RSamples(i))*Message/(1/(2*pi)/Sigma4/Sigma1*exp(-(B-2*Iris_RSamples(i))^2/2/(Sigma1^2)-norm(TmpRefCenter-Iris_XcSamples(:,i),2)^2/2/(Sigma4^2)));
         if isnan(Iris_Samples_NewWeight(i))
             disp('nan');
             ObservationValue_Iris( EdgeMag, EdgeTheta, Iris_XcSamples(:,i), Xe, Theta, Iris_RSamples(i));
