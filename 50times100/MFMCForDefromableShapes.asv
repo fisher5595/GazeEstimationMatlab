@@ -48,8 +48,14 @@ Xc=[Height*0.6;Width*0.6];
 %Xc=[0;0];
 Theta=0;
 A=Height/2;
+%For outer up-parabola
+A2OverA=1.1;
+A2=A*A2OverA;
 C=Height/8;
 B=Width/4;
+%For outer up-parabola
+B2OverB=1.5;
+B2=B*B2OverB;
 R=Width/8;
 MaxIter=20;
 SampleAmount=300;
@@ -67,7 +73,7 @@ IniResultImg=uint8(zeros(size(Img,1),size(Img,2),3));
 IniResultImg(:,:,1)=Img;
 IniResultImg(:,:,2)=Img;
 IniResultImg(:,:,3)=Img;
-IniResultImg=WriteResultOnImg( IniResultImg, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, C, B, R );
+IniResultImg=WriteResultOnImgWithOutterUpParabola( IniResultImg, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, A2, C, B, B2, R );
 
 % Loop body
 for iter=1:MaxIter
@@ -99,7 +105,9 @@ for iter=1:MaxIter
         Contour_XeSamples(2,:)=normrnd(Transformed_Xe(2),Sigma1,1,SampleAmount);
         Contour_ThetaSamples=normrnd(Theta,Sigma2,1,SampleAmount);
         Contour_ASamples=normrnd(A,Sigma3,1,SampleAmount);
+        Contour_A2Samples=normrnd(A2,Sigma3,1,SampleAmount);
         Contour_BSamples=normrnd(2*R,Sigma4,1,SampleAmount);
+        Contour_B2Samples=normrnd(2*R*B2OverB,Sigma4,1,SampleAmount);
         Contour_CSamples=normrnd(C,Sigma3,1,SampleAmount);
         
         % Iris circle samples
@@ -133,8 +141,10 @@ for iter=1:MaxIter
         Contour_Samples_NewWeight=double(ones(1,SampleAmount))./SampleAmount;
         Contour_ThetaSamples=GenerateSmaplesBasedOnWeights(Contour_Old_ThetaSamples, Contour_Samples_Old_Weight./sum(Contour_Samples_Old_Weight), Resample_Sigma2, SampleAmount);
         Contour_ASamples=GenerateSmaplesBasedOnWeights(Contour_Old_ASamples, Contour_Samples_Old_Weight./sum(Contour_Samples_Old_Weight), Resample_Sigma3, SampleAmount);
+        Contour_A2Samples=GenerateSmaplesBasedOnWeights(Contour_Old_A2Samples, Contour_Samples_Old_Weight./sum(Contour_Samples_Old_Weight), Resample_Sigma3, SampleAmount);
         Contour_BSamples=GenerateSmaplesBasedOnWeights(Iris_Old_RSamples.*2, Iris_Samples_Old_Weight./sum(Iris_Samples_Old_Weight), Resample_Sigma4, SampleAmount);
         Contour_BSamples=ones(1,SampleAmount).*B;
+        Contour_B2Samples=ones(1,SampleAmount).*B2;
         Contour_CSamples=GenerateSmaplesBasedOnWeights(Contour_Old_CSamples,Contour_Samples_Old_Weight./sum(Contour_Samples_Old_Weight), Resample_Sigma3, SampleAmount);
         
         % Iris circle samples
@@ -170,7 +180,9 @@ for iter=1:MaxIter
         Contour_Old_XeSamples=Contour_XeSamples;
         Contour_Old_ThetaSamples=Contour_ThetaSamples;
         Contour_Old_ASamples=Contour_ASamples;
+        Contour_Old_A2Samples=Contour_A2Samples;
         Contour_Old_BSamples=Contour_BSamples;
+        Contour_Old_B2Samples=Contour_B2Samples;
         Contour_Old_CSamples=Contour_CSamples;
         Contour_Samples_Old_Weight=Contour_Samples_NewWeight;
 
@@ -214,16 +226,20 @@ for iter=1:MaxIter
         Message=0;
         if iter==1
             ConstrainBR=1;
+            ConstrainB2R=1;
         else
             ConstrainBR=0;
+            ConstrainB2R=0;
         end
         if iter==1
             ConstrainBR_Weight=sqrt(2*pi)*Sigma4;
+            ConstrainB2R_Weight=sqrt(2*pi)*Sigma4;
         else
             ConstrainBR_Weight=1;
+            ConstrainB2R_Weight=1;
         end
         for n=1:SampleAmount
-            Message=Message+Iris_Samples_Old_Weight(n)*log(1/(ConstrainBR_Weight)/(sqrt(2*pi)*Sigma1)*exp(-(Contour_BSamples(i)-2*Iris_Old_RSamples(n))^2/2/(Sigma4^2)*ConstrainBR-norm(Contour_XeSamples(:,i)-TransformMatrix_Xc2Xe*Iris_Old_XcSamples(:,n),2)^2/2/(Sigma1^2)));
+            Message=Message+Iris_Samples_Old_Weight(n)*log(1/(ConstrainBR_Weight)/(ConstrainB2R_Weight)/(sqrt(2*pi)*Sigma1)*exp(-(Contour_BSamples(i)-2*Iris_Old_RSamples(n))^2/2/(Sigma4^2)*ConstrainBR-(Contour_B2Samples(i)-2*Iris_Old_RSamples(n)*B2OverB)^2/2/(Sigma4^2)*ConstrainB2R-norm(Contour_XeSamples(:,i)-TransformMatrix_Xc2Xe*Iris_Old_XcSamples(:,n),2)^2/2/(Sigma1^2)));
         end
         Message=exp(Message*4);
         if iter==0
@@ -231,7 +247,7 @@ for iter=1:MaxIter
         else
             TmpRefCenter=Transformed_Xe;
         end
-        Contour_Samples_NewWeight(i)=ObservationValue_Contour( EdgeMag, EdgeTheta, Contour_XeSamples(:,i), Contour_ThetaSamples(i), Contour_ASamples(i), Contour_BSamples(i), Contour_CSamples(i))*Message/(1/(ConstrainBR_Weight)/(sqrt(2*pi)*Sigma1)*exp(-(Contour_BSamples(i)-2*R)^2/2/(Sigma4^2)*ConstrainBR-norm(Contour_XeSamples(:,i)-TmpRefCenter,2)^2/2/(Sigma1^2)));
+        Contour_Samples_NewWeight(i)=ObservationValue_Contour_Plus_Outter_Up_Parabola( EdgeMag, EdgeTheta, Contour_XeSamples(:,i), Contour_ThetaSamples(i), Contour_ASamples(i), Contour_A2Samples(i), Contour_BSamples(i), Contour_B2Samples(i), Contour_CSamples(i))*Message/(1/(ConstrainBR_Weight)/(ConstrainB2R_Weight)/(sqrt(2*pi)*Sigma1)*exp(-(Contour_BSamples(i)-2*R)^2/2/(Sigma4^2)*ConstrainBR-(Contour_B2Samples(i)-2*R)^2/2/(Sigma4^2)*ConstrainB2R-norm(Contour_XeSamples(:,i)-TmpRefCenter,2)^2/2/(Sigma1^2)));
         if isnan(Contour_Samples_NewWeight(i))
             disp('nan');
             ObservationValue_Contour( EdgeMag, EdgeTheta, Contour_XeSamples(:,i), Contour_ThetaSamples(i), Contour_ASamples(i), Contour_BSamples(i), Contour_CSamples(i));
@@ -245,7 +261,7 @@ for iter=1:MaxIter
             ConstrainBR=0;
         end
         for n=1:SampleAmount
-            Message=Message+Contour_Samples_Old_Weight(n)*log(1/(2*pi)/(Sigma4*ConstrainBR_Weight)/Sigma1*exp(-(Contour_Old_BSamples(n)-2*Iris_RSamples(i))^2/2/(Sigma4^2)*ConstrainBR-norm(TransformMatrix_Xc2Xe\Contour_Old_XeSamples(:,n)-Iris_XcSamples(:,i),2)^2/2/(Sigma1^2)));
+            Message=Message+Contour_Samples_Old_Weight(n)*log(1/(ConstrainBR_Weight)/(sqrt(2*pi)*Sigma1)*exp(-(Contour_Old_BSamples(n)-2*Iris_RSamples(i))^2/2/(Sigma4^2)*ConstrainBR-norm(TransformMatrix_Xc2Xe\Contour_Old_XeSamples(:,n)-Iris_XcSamples(:,i),2)^2/2/(Sigma1^2)));
         end
         Message=exp(Message*4);
         if iter==0
@@ -253,7 +269,7 @@ for iter=1:MaxIter
         else
             TmpRefCenter=Transformed_Xc;
         end
-        Iris_Samples_NewWeight(i)=ObservationValue_Iris( EdgeMag, EdgeTheta, ImgCor2NewCor(Iris_XcSamples(:,i),Xe,Theta), Xe, Theta, Iris_RSamples(i))*Message/(1/(2*pi)/(Sigma4*ConstrainBR_Weight)/Sigma1*exp(-(B-2*Iris_RSamples(i))^2/2/(Sigma4^2)*ConstrainBR-norm(TmpRefCenter-Iris_XcSamples(:,i),2)^2/2/(Sigma1^2)));
+        Iris_Samples_NewWeight(i)=ObservationValue_Iris( EdgeMag, EdgeTheta, ImgCor2NewCor(Iris_XcSamples(:,i),Xe,Theta), Xe, Theta, Iris_RSamples(i))*Message/(1/(ConstrainBR_Weight)/(sqrt(2*pi)*Sigma1)*exp(-(B-2*Iris_RSamples(i))^2/2/(Sigma4^2)*ConstrainBR-norm(TmpRefCenter-Iris_XcSamples(:,i),2)^2/2/(Sigma1^2)));
         if isnan(Iris_Samples_NewWeight(i))
             disp('nan');
             ObservationValue_Iris( EdgeMag, EdgeTheta, Iris_XcSamples(:,i), Xe, Theta, Iris_RSamples(i));
@@ -269,7 +285,7 @@ for iter=1:MaxIter
     % Meanshift analysis
 %     [Up_SampleModes,Up_SampleModesWeight]=MeanshiftFindSampleModes([Up_XeSamples;Up_ThetaSamples;Up_ASamples;Up_BSamples], Up_Samples_NewWeight);
 %     [Low_SampleModes,Low_SampleModesWeight]=MeanshiftFindSampleModes([Low_XeSamples;Low_ThetaSamples;Low_CSamples;Low_BSamples], Low_Samples_NewWeight);
-    [Contour_SampleModes,Contour_SampleModesWeight]=MeanshiftFindSampleModes([Contour_XeSamples;Contour_ThetaSamples;Contour_ASamples;Contour_BSamples;Contour_CSamples], Contour_Samples_NewWeight);
+    [Contour_SampleModes,Contour_SampleModesWeight]=MeanshiftFindSampleModes([Contour_XeSamples;Contour_ThetaSamples;Contour_ASamples;Contour_BSamples;Contour_B2Samples;Contour_CSamples], Contour_Samples_NewWeight);
     [Iris_SampleModes,Iris_SampleModesWeight]=MeanshiftFindSampleModes([Iris_XcSamples;Iris_RSamples], Iris_Samples_NewWeight);
 %     [Up_SampleModeMaxWeight,Up_SampleModeMaxIndex]=max(Up_SampleModesWeight);
 %     [Low_SampleModeMaxWeight,Low_SampleModeMaxIndex]=max(Low_SampleModesWeight);
@@ -278,8 +294,9 @@ for iter=1:MaxIter
     Xe=Contour_SampleModes(1:2,1);
     Theta=Contour_SampleModes(3,1);
     B=Contour_SampleModes(5,1);
+    B2=Contour_SampleModes(6,1);
     A=Contour_SampleModes(4,1);
-    C=Contour_SampleModes(6,1);
+    C=Contour_SampleModes(7,1);
     Xc=Iris_SampleModes(1:2,1);
     R=Iris_SampleModes(3,1);
 
@@ -324,7 +341,9 @@ for iter=1:MaxIter
     Contour_Old_ThetaSamples=Contour_ThetaSamples;
     Contour_Old_CSamples=Contour_CSamples;
     Contour_Old_BSamples=Contour_BSamples;
+    Contour_Old_B2Samples=Contour_B2Samples;
     Contour_Old_ASamples=Contour_ASamples;
+    Contour_Old_A2Samples=Contour_A2Samples;
 
     % Iris circle samples
     Iris_Old_XcSamples=Iris_XcSamples;
@@ -336,12 +355,12 @@ for iter=1:MaxIter
     ResultImg(:,:,1)=Img;
     ResultImg(:,:,2)=Img;
     ResultImg(:,:,3)=Img;
-    ResultImg=WriteResultOnImg( ResultImg, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, C, B, R );
+    ResultImg=WriteResultOnImgWithOutterUpParabola( ResultImg, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, C, B, B2, R );
     ResultOnEdge=uint8(zeros(size(EdgeMag,1),size(EdgeMag,2),3));
     ResultOnEdge(:,:,1)=uint8(EdgeMag./max(max(EdgeMag))*255);
     ResultOnEdge(:,:,2)=uint8(EdgeMag./max(max(EdgeMag))*255);
     ResultOnEdge(:,:,3)=uint8(EdgeMag./max(max(EdgeMag))*255);
-    ResultOnEdge=WriteResultOnImg( ResultOnEdge, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, C, B, R );
+    ResultOnEdge=WriteResultOnImgWithOutterUpParabola( ResultOnEdge, Xe, ImgCor2NewCor(Xc,Xe,Theta), Theta, A, C, B, B2, R );
 
     % Display results
     figure(iter);

@@ -1,14 +1,14 @@
-function [ ObservationValue ] = ObservationValue_LowParabola( EdgeMag, EdgeTheta, Xe, Theta, C, B)
+function [ ObservationValue ] = ObservationValue_OutterUpParabola( EdgeMag, EdgeTheta, Xe, Theta, A2, B2)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 Value=0;
 [Height,Width]=size(EdgeMag);
 sigma=100;
 displacement=1;
-deltaOfParabola=B/10;
-for x0=-B:deltaOfParabola:B
-    y0=-C+C/(B^2)*(x0^2);
-    k=1/x0*B^2/(2*C);
+deltaOfParabola=B2/10;
+for x0=-B2:deltaOfParabola:B2
+    y0=A2-A2/(B2^2)*(x0^2);
+    k=1/x0*B2^2/(-2*A2);
     Normal=-1/k;
     if k==0
         ModelTheta=pi/2;
@@ -41,7 +41,7 @@ for x0=-B:deltaOfParabola:B
                     disp('nan');
                 end
             else
-                Value=Value-exp(norm([y-y0;x-x0],2)^2);            
+                Value=Value-exp(norm([y-y0;x-x0],2)^2);                
             end
         end
     end
@@ -54,3 +54,4 @@ else
 end
 
 end
+

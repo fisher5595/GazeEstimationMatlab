@@ -9,13 +9,15 @@ deltaOfParabola=B/10;
 for x0=-B:deltaOfParabola:B
     y0=A-A/(B^2)*(x0^2);
     k=1/x0*B^2/(-2*A);
-    Normal=1/k;
+    Normal=-1/k;
     if k==0
         ModelTheta=pi*3/2;
     else
         ModelTheta=atan(Normal);
         if ModelTheta<0
             ModelTheta=ModelTheta+2*pi;
+        else
+            ModelTheta=ModelTheta+pi;
         end
     end
     if abs(Normal)<1 || abs(k)>1
