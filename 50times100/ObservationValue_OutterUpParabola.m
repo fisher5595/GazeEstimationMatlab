@@ -3,7 +3,7 @@ function [ ObservationValue ] = ObservationValue_OutterUpParabola( EdgeMag, Edge
 %   Detailed explanation goes here
 Value=0;
 [Height,Width]=size(EdgeMag);
-sigma=100;
+sigma=1;
 displacement=1;
 deltaOfParabola=B2/10;
 for x0=-B2:deltaOfParabola:B2

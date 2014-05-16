@@ -292,9 +292,9 @@ for iter=1:MaxIter
     Iris_Samples_NewWeight=Iris_Samples_NewWeight./sum(Iris_Samples_NewWeight);
     
     % Record observation values of all sample points
-%     for i=1:SampleAmount
-%         DisplayResult(1, Img, EdgeMag, Contour_XeSamples(:,i), Iris_XcSamples(:,i), Contour_ThetaSamples(i), Contour_ASamples(i), Contour_A2Samples(i), Contour_CSamples(i), Contour_BSamples(i), Contour_B2Samples(i), Iris_RSamples(i) );
-%     end
+    for i=1:SampleAmount
+        DisplayResult(1, Img, EdgeMag, Contour_XeSamples(:,i), Contour_XcSamples(:,i), Contour_ThetaSamples(i), Contour_ASamples(i), Contour_ASamples(i), C, B, B2, R )
+    end
     
     % Meanshift analysis
 %     [Up_SampleModes,Up_SampleModesWeight]=MeanshiftFindSampleModes([Up_XeSamples;Up_ThetaSamples;Up_ASamples;Up_BSamples], Up_Samples_NewWeight);
