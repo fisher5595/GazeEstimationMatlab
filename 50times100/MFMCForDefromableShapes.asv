@@ -72,40 +72,29 @@ Train_C=load('Training_C.mat');
 Train_C=Train_C.x;
 Train_R=load('Training_R.mat');
 Train_R=Train_R.x;
-Train_Theta=load('Training_Theta.mat');
-Train_Theta=Train_Theta.x;
 Train_Xe=load('Training_Xe.mat');
 Train_Xe=Train_Xe.x;
 Train_Xc=load('Training_Xc.mat');
 Train_Xc=Train_Xc.x;
 Xe=Train_Xe(:,MatchImgNum);
 Xc=Train_Xc(:,MatchImgNum);
-Theta=Train_Theta(MatchImgNum);
-A=Train_A(MatchImgNum);
-A2=Train_A2(MatchImgNum);
-B=Train_B(MatchImgNum);
-B2=Train_B2(MatchImgNum);
-C=Train_C(MatchImgNum);
-R=Train_R(MatchImgNum);
-B2OverB=B2/B;
-
 %% 
 
 % Parameters
-% Xe=[Height*0.7;Width*0.6];
-% Xc=[Height*0.6;Width*0.6];
-% %Xc=[0;0];
-% Theta=0;
-% A=Height/2;
-% %For outer up-parabola
-% A2OverA=1.1;
-% A2=A*A2OverA;
-% C=Height/8;
-% B=Width/4;
-% %For outer up-parabola
-% B2OverB=1.5;
-% B2=B*B2OverB;
-% R=Width/8;
+Xe=[Height*0.7;Width*0.6];
+Xc=[Height*0.6;Width*0.6];
+%Xc=[0;0];
+Theta=0;
+A=Height/2;
+%For outer up-parabola
+A2OverA=1.1;
+A2=A*A2OverA;
+C=Height/8;
+B=Width/4;
+%For outer up-parabola
+B2OverB=1.5;
+B2=B*B2OverB;
+R=Width/8;
 MaxIter=20;
 SampleAmount=300;
 Sigma1=10;
