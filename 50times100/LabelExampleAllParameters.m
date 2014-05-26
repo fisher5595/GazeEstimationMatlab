@@ -62,6 +62,7 @@ for ImgCount=1:img_amount
     B(ImgCount)=TmpB;
     B2(ImgCount)=TmpB2;
     C(ImgCount)=TmpC;
+    Theta(ImgCount)=TmpTheta;
     pause;
 end
 
