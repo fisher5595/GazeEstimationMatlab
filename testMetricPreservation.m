@@ -1,16 +1,40 @@
 %test case from i=1 to 36;
-clear all;
+clear;
 clc;
 %featureName='feature_';
 %matrixAName='amatrix_';
-featureName='AlignedFeature_left_';
+featureName='enlarged_AlignedFeature_left_';
+%%
+%extract eye contour parameters
+Train_A=load('Training_A.mat');
+Train_A=Train_A.x;
+Train_A2=load('Training_A2.mat');
+Train_A2=Train_A2.x;
+Train_B=load('Training_B.mat');
+Train_B=Train_B.x;
+Train_B2=load('Training_B2.mat');
+Train_B2=Train_B2.x;
+Train_C=load('Training_C.mat');
+Train_C=Train_C.x;
+Train_R=load('Training_R.mat');
+Train_R=Train_R.x;
+Train_Theta=load('Training_Theta.mat');
+Train_Theta=Train_Theta.x;
+Train_Xe=load('Training_Xe.mat');
+Train_Xe=Train_Xe.x;
+Train_Xc=load('Training_Xc.mat');
+Train_Xc=Train_Xc.x;
+Train_Parameters_Matrix=[Train_A;Train_A2;Train_B;Train_B2;Train_C;Train_R;Train_Theta;Train_Xe;Train_Xc];
+%%
 groundTruthName='queryGroundTruth_';
 knnPositionsName='knnPositions_';
 r=3;
 k_knn=20;
-%sigma1=64723;
-sigma1=376989.5;
-sigma2=1.0874;
+sigma1=64723;
+%sigma1=376989.5;
+%sigma1 for feature with contour parameters
+sigma2=1674;
+%sigma2=1.0874;
 epsilon=0.1;
 
 for i = 1:36
@@ -25,47 +49,49 @@ for i = 1:36
     FeatureMatrix(:,i)=featurevector;
     PositionMatrix(:,i)=groundTruthVector';    
 end
+%Add labeled eye contour parameters to feature matrix
+FeatureMatrix=Train_Parameters_Matrix;
 featuredimension=size(FeatureMatrix,1);
 NumOfFeatures=size(FeatureMatrix,2);
 y=PositionMatrix;
 x=FeatureMatrix;
 S=eye(featuredimension);
-% for i=1:NumOfFeatures
-%     for j=1:NumOfFeatures
-%         w(i,j)=exp(-(y(:,i)-y(:,j))'*(y(:,i)-y(:,j))/2/sigma1);
-%     end
-% end
+for i=1:NumOfFeatures
+    for j=1:NumOfFeatures
+        w(i,j)=exp(-(y(:,i)-y(:,j))'*(y(:,i)-y(:,j))/2/sigma1);
+    end
+end
 
 %
 % Change distance of X from homo to heter, gradient of X change from 2 to
 % 1
 %
-for i=1:NumOfFeatures
-    for j=1:NumOfFeatures
-        if y(1,i)<240
-            y1=2*y(1,i)+y(1,i)^2/480-y(1,i);
-        else
-            y1=2*y(1,i)-y(1,i)^2/480+y(1,i);
-        end
-        if y(1,j)<240
-            y2=2*y(1,j)+y(1,j)^2/480-y(1,j);
-        else
-            y2=2*y(1,j)-y(1,j)^2/480+y(1,j);
-        end
-        if y(2,i)<320
-            x1=2*y(2,i)+y(2,i)^2/640-y(1,i);
-        else
-            x1=2*y(2,i)-y(2,i)^2/640+y(1,i);
-        end
-        if y(2,j)<320
-            x2=2*y(2,j)+y(2,j)^2/640-y(1,j);
-        else
-            x2=2*y(2,j)-y(2,j)^2/640+y(1,j);
-        end
-        w(i,j)=exp(-((x1-x2)^2+(y1-y2)^2)/2/sigma1);
-        dd(i,j)=(x1-x2)^2+(y1-y2)^2;
-    end
-end
+% for i=1:NumOfFeatures
+%     for j=1:NumOfFeatures
+%         if y(1,i)<240
+%             y1=2*y(1,i)+y(1,i)^2/480-y(1,i);
+%         else
+%             y1=2*y(1,i)-y(1,i)^2/480+y(1,i);
+%         end
+%         if y(1,j)<240
+%             y2=2*y(1,j)+y(1,j)^2/480-y(1,j);
+%         else
+%             y2=2*y(1,j)-y(1,j)^2/480+y(1,j);
+%         end
+%         if y(2,i)<320
+%             x1=2*y(2,i)+y(2,i)^2/640-y(1,i);
+%         else
+%             x1=2*y(2,i)-y(2,i)^2/640+y(1,i);
+%         end
+%         if y(2,j)<320
+%             x2=2*y(2,j)+y(2,j)^2/640-y(1,j);
+%         else
+%             x2=2*y(2,j)-y(2,j)^2/640+y(1,j);
+%         end
+%         w(i,j)=exp(-((x1-x2)^2+(y1-y2)^2)/2/sigma1);
+%         dd(i,j)=(x1-x2)^2+(y1-y2)^2;
+%     end
+% end
 for i=1:NumOfFeatures
     for j=1:NumOfFeatures
         p(i,j)=w(i,j)/(sum(w(i,:))-w(i,i));
@@ -103,7 +129,7 @@ while 1
     for i=1:featuredimension
         NewNewS=NewNewS+max(0,Lampda(i,i))*U(:,i)*U(:,i)';
     end
-    if sum(sum((NewNewS-S).^2))<=0.00001
+    if sum(sum((NewNewS-S).^2))<=0.00002
         disp(sum(sum((NewNewS-S).^2)));
         break;
     else

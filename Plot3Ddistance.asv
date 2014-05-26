@@ -90,8 +90,8 @@ figure(1)
 mesh(PositionMatrix(2,1:6),PositionMatrix(1,1:6:36),PreservedDistanceMatrix);
 figure(2)
 mesh(PositionMatrix(2,1:6),PositionMatrix(1,1:6:36),DistanceMatrix);
-%figure(3)
-%mesh(PositionMatrix(2,1:6),PositionMatrix(1,1:6:36),OldDistanceMatrix);
+figure(3)
+mesh(PositionMatrix(2,1:6),PositionMatrix(1,1:6:36),OldDistanceMatrix);
 figure(4)
 mesh(PositionMatrix(2,1:6),PositionMatrix(1,1:6:36),PositionDistanceMatrix);
 figure(5)
