@@ -3,8 +3,10 @@ clear;
 clc;
 %featureName='feature_';
 %matrixAName='amatrix_';
-featureName='enlarged_AlignedFeature_left_';
+featureName='enlarged_RegisteredFeature_left_';
 %%
+%svd parameter
+r=2;
 %extract eye contour parameters
 Train_A=load('Training_A.mat');
 Train_A=Train_A.x;
@@ -25,11 +27,30 @@ Train_Xe=Train_Xe.x;
 Train_Xc=load('Training_Xc.mat');
 Train_Xc=Train_Xc.x;
 Train_Parameters_Matrix=[Train_A;Train_A2;Train_B;Train_B2;Train_C;Train_R;Train_Theta;Train_Xe;Train_Xc];
+%Generate new features of from model parameters, new feature is sample
+%point coordinates of each model instance.
+Train_Model_Instance_Coordinates_Matrix=[];
+for i=1:size(Train_Parameters_Matrix,2)
+    Train_A=Train_Parameters_Matrix(1,i);
+    Train_A2=Train_Parameters_Matrix(2,i);
+    Train_B=Train_Parameters_Matrix(3,i);
+    Train_B2=Train_Parameters_Matrix(4,i);
+    Train_C=Train_Parameters_Matrix(5,i);
+    Train_R=Train_Parameters_Matrix(6,i);
+    Train_Theta=Train_Parameters_Matrix(7,i);
+    Train_Xe=Train_Parameters_Matrix(8:9,i);
+    Train_Xc=Train_Parameters_Matrix(10:11,i);
+    Train_Model_Instance_Coordinates_Vector=GenerateSamplePointCoordinatesOfOneInstance( Train_Xe, Train_Xc, Train_Theta, Train_A, Train_A2, Train_C, Train_B, Train_B2, Train_R );
+    Train_Model_Instance_Coordinates_Matrix=[Train_Model_Instance_Coordinates_Matrix Train_Model_Instance_Coordinates_Vector];
+end
+[U,S,V]=svd(Train_Parameters_Matrix);
+P=U(:,1:r);
+%Train_Parameters_Matrix=P'*Train_Parameters_Matrix;
 %%
 groundTruthName='queryGroundTruth_';
 knnPositionsName='knnPositions_';
 r=3;
-k_knn=20;
+k_knn=35;
 sigma1=64723;
 %sigma1=376989.5;
 %sigma1 for feature with contour parameters
@@ -50,7 +71,7 @@ for i = 1:36
     PositionMatrix(:,i)=groundTruthVector';    
 end
 %Add labeled eye contour parameters to feature matrix
-FeatureMatrix=Train_Parameters_Matrix;
+FeatureMatrix=FeatureMatrix;
 featuredimension=size(FeatureMatrix,1);
 NumOfFeatures=size(FeatureMatrix,2);
 y=PositionMatrix;
@@ -129,7 +150,7 @@ while 1
     for i=1:featuredimension
         NewNewS=NewNewS+max(0,Lampda(i,i))*U(:,i)*U(:,i)';
     end
-    if sum(sum((NewNewS-S).^2))<=0.00002
+    if sum(sum((NewNewS-S).^2))<=0.00001
         disp(sum(sum((NewNewS-S).^2)));
         break;
     else
@@ -161,7 +182,7 @@ for i = 1:36
         TrainingWeightMatrix(:,k)=PositionMatrix(:,index(k));
     end
     CMatrix=(FeatureVector*ones(k_knn,1)'-AMatrix)'*S*(FeatureVector*ones(k_knn,1)'-AMatrix);
-    weight=CMatrix\ones(k_knn,1);
+    weight=pinv(CMatrix)*ones(k_knn,1);
     weight=weight./sum(weight);
     Weight(:,i)=weight;
     EstimatePosition=TrainingWeightMatrix*weight;
