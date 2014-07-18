@@ -3,7 +3,7 @@ clear;
 clc;
 %featureName='feature_';
 %matrixAName='amatrix_';
-featureName='enlarged_RegisteredFeature_left_';
+featureName='enlarged_AlignedFeature_left_';
 %%
 %svd parameter
 r=2;
@@ -50,7 +50,7 @@ P=U(:,1:r);
 groundTruthName='queryGroundTruth_';
 knnPositionsName='knnPositions_';
 r=3;
-k_knn=35;
+k_knn=20;
 sigma1=64723;
 %sigma1=376989.5;
 %sigma1 for feature with contour parameters
@@ -163,7 +163,7 @@ while 1
 end
 disp('S:');
 disp(S);
-%S=eye(featuredimension);
+S=eye(featuredimension);
 for i = 1:36
     FeatureVector=FeatureMatrix(:,i);
     for ii = 1:36
