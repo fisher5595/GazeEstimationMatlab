@@ -2,7 +2,7 @@
 %coordinates rectangels.
 QueryNumber=10;
 DisplayKnn=6;
-featureName='enlarged_AlignedFeature_left_';
+featureName='enlarged_RegisteredFeature_left_';
 feature=load([featureName,int2str(QueryNumber-1),'.mat']);
 QueryFeature=feature.x;
 
@@ -10,12 +10,12 @@ QueryFeature=feature.x;
 for i = 1:36
     feature=load([featureName,int2str(i-1),'.mat']);
     %A=load([matrixAName,int2str(i-1),'.mat']);
-    trainingPositions=load([knnPositionsName,int2str(i-1),'.mat']);
-    groundTruth=load([groundTruthName,int2str(i-1),'.mat']);
+    %trainingPositions=load([knnPositionsName,int2str(i-1),'.mat']);
+    %groundTruth=load([groundTruthName,int2str(i-1),'.mat']);
     featurevector=feature.x;
     %matrixA=A.A;
-    trainingPositionMatrix=trainingPositions.A;
-    groundTruthVector=groundTruth.x;
+    %trainingPositionMatrix=trainingPositions.A;
+    %groundTruthVector=groundTruth.x;
     FeatureMatrix(:,i)=featurevector; 
 end
 
