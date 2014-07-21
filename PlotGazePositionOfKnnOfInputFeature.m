@@ -2,13 +2,14 @@
 %coordinates rectangels.
 QueryNumber=10;
 DisplayKnn=6;
+RoundNumber=4;
 featureName='enlarged_RegisteredFeature_left_';
-feature=load([featureName,int2str(QueryNumber-1),'.mat']);
+feature=load([featureName,int2str(QueryNumber-1),'__',int2str(RoundNumber),'.mat']);
 QueryFeature=feature.x;
 
 %Load training feature matrix.
 for i = 1:36
-    feature=load([featureName,int2str(i-1),'.mat']);
+    feature=load([featureName,int2str(i-1),'__',int2str(RoundNumber),'.mat']);
     %A=load([matrixAName,int2str(i-1),'.mat']);
     %trainingPositions=load([knnPositionsName,int2str(i-1),'.mat']);
     %groundTruth=load([groundTruthName,int2str(i-1),'.mat']);
@@ -20,7 +21,7 @@ for i = 1:36
 end
 
 for QueryNumber=1:36
-    feature=load([featureName,int2str(QueryNumber-1),'.mat']);
+    feature=load([featureName,int2str(QueryNumber-1),'__',int2str(RoundNumber),'.mat']);
     QueryFeature=feature.x;
     %Calculate SSD of the 
     SSDOfFeature=[];
