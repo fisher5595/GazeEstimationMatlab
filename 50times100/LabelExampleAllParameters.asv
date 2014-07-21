@@ -8,7 +8,7 @@ clear;
 clc;
 img_basename='test_enlarged_ResizedEyes_left_';
 img_extention_name='.jpg';
-sample_round=4;
+sample_round=1;
 img_amount=36;
 TotalX=[];
 TotalY=[];
@@ -27,7 +27,6 @@ while ImgCount<=img_amount
     img=imread(img_name);
     figure(1);
     imshow(img);
-    set(gcf, 'Name', ['Labeling No.' int2str(ImgCount)]);
     [x,y]=ginput(11);
     TmpXe=zeros(2,1);
     TmpXc=zeros(2,1);
@@ -55,8 +54,9 @@ while ImgCount<=img_amount
     ResultImg(:,:,3)=img;
     ResultImg=WriteResultOnImgWithOutterUpParabola( ResultImg, TmpXe, ImgCor2NewCor(TmpXc,TmpXe,TmpTheta), TmpTheta, TmpA, TmpA2, TmpC, TmpB, TmpB2, TmpR );
     imshow(ResultImg);
-    Satisfied=input('Ok with current label result?>','s');
-    if Satisfied=='y' || Satisfied=='Y'
+    title(['Labeling No.' int2str(ImgCount)]);
+    Satisfied=input('Ok with current label result?');
+    if Ssatisfied=='y' || Ssatisfied=='Y'
         TotalX=[TotalX x];
         TotalY=[TotalY y];
         Xe(:,ImgCount)=TmpXe;
@@ -75,21 +75,21 @@ end
 SaveFileNamePrefix='Training_';
 SaveFileNameSuffix='.mat';
 x=Xc;
-save([SaveFileNamePrefix,'Xc', '__', int2str(sample_round), SaveFileNameSuffix],'x');
+save([SaveFileNamePrefix,'Xc' '__' int2str()SaveFileNameSuffix],'x');
 x=Xe;
-save([SaveFileNamePrefix,'Xe', '__', int2str(sample_round), SaveFileNameSuffix],'x');
+save([SaveFileNamePrefix,'Xe',SaveFileNameSuffix],'x');
 x=A;
-save([SaveFileNamePrefix,'A', '__', int2str(sample_round), SaveFileNameSuffix],'x');
+save([SaveFileNamePrefix,'A',SaveFileNameSuffix],'x');
 x=A2;
-save([SaveFileNamePrefix,'A2', '__', int2str(sample_round), SaveFileNameSuffix],'x');
+save([SaveFileNamePrefix,'A2',SaveFileNameSuffix],'x');
 x=B;
-save([SaveFileNamePrefix,'B', '__', int2str(sample_round), SaveFileNameSuffix],'x');
+save([SaveFileNamePrefix,'B',SaveFileNameSuffix],'x');
 x=B2;
-save([SaveFileNamePrefix,'B2', '__', int2str(sample_round), SaveFileNameSuffix],'x');
+save([SaveFileNamePrefix,'B2',SaveFileNameSuffix],'x');
 x=C;
-save([SaveFileNamePrefix,'C', '__', int2str(sample_round), SaveFileNameSuffix],'x');
+save([SaveFileNamePrefix,'C',SaveFileNameSuffix],'x');
 x=Theta;
-save([SaveFileNamePrefix,'Theta', '__', int2str(sample_round), SaveFileNameSuffix],'x');
+save([SaveFileNamePrefix,'Theta',SaveFileNameSuffix],'x');
 x=R;
-save([SaveFileNamePrefix,'R', '__', int2str(sample_round), SaveFileNameSuffix],'x');
+save([SaveFileNamePrefix,'R',SaveFileNameSuffix],'x');
 
