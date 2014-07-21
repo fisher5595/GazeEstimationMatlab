@@ -5,7 +5,7 @@
 clear;
 ImageName='enlarged_ResizedEyes_left_';
 ImageNumber=1;
-RoundNumber=4;
+RoundNumber=1;
 RightCornerImageNumber=1;
 ImageExtension='.jpg';
 QueryImageNumber=1;
@@ -70,10 +70,10 @@ Train_Xc=load(['Training_Xc' '__' int2str(RoundNumber) '.mat']);
 Train_Xc=Train_Xc.x;
 
 %Register 2-36 eye image with 1st eye image, resize and save feature
-for QueryImageNumber=1:36
+for QueryImageNumber=2:36
     MovingPoints=[Train_Xe(2,QueryImageNumber)-cos(Train_Theta(QueryImageNumber))*Train_B2(QueryImageNumber), Train_Xe(1,QueryImageNumber)+sin(Train_Theta(QueryImageNumber))*Train_B2(QueryImageNumber); Train_Xe(2,QueryImageNumber)+cos(Train_Theta(QueryImageNumber))*Train_B2(QueryImageNumber),Train_Xe(1,QueryImageNumber)-sin(Train_Theta(QueryImageNumber))*Train_B2(QueryImageNumber)];
     MovingPoints=round(MovingPoints);
-    QueryImage=imread(['test_', ImageName,int2str(QueryImageNumber),'__', int2str(RoundNumber), ImageExtension]);
+    QueryImage=imread([ImageName,int2str(QueryImageNumber),ImageExtension]);
     tform = fitgeotrans(MovingPoints,FixedPoints,'nonreflectivesimilarity');
     QueryRegisteredImage=imwarp(QueryImage,tform,'OutputView',imref2d(size(TemplateImage)));
     figure(2);
@@ -84,13 +84,13 @@ for QueryImageNumber=1:36
     QueryCroppedImage=QueryRegisteredImage(YRange(1):YRange(2),FixedPoints(1,1):FixedPoints(2,1));
     figure(4);
     imshowpair(CroppedImage,QueryCroppedImage,'montage');
-    imwrite(QueryCroppedImage,['enlarged_registeredEyes_left_',int2str(QueryImageNumber),'__', int2str(RoundNumber),'.jpg']);
+    imwrite(QueryCroppedImage,['enlarged_registeredEyes_left_',int2str(QueryImageNumber),'.jpg']);
     RegisteredResizedImage=imresize(QueryCroppedImage, Resize);
     ImageVector=[];
     for i=1:size(RegisteredResizedImage,1)
         ImageVector=[ImageVector RegisteredResizedImage(i,:)];
     end
     x.x=double(ImageVector')./255;
-    save(['enlarged_RegisteredFeature_left_', int2str(QueryImageNumber-1),'__', int2str(RoundNumber), '.mat'],'-struct','x');
+    save(['enlarged_RegisteredFeature_left_', int2str(QueryImageNumber-1), '.mat'],'-struct','x');
     pause;
 end
