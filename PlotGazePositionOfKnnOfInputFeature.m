@@ -1,11 +1,21 @@
 %Calculate the knn of input feature, plot the corresponding first knn
 %coordinates rectangels.
+clear;
 QueryNumber=10;
 DisplayKnn=6;
 RoundNumber=4;
 featureName='enlarged_RegisteredFeature_left_';
 feature=load([featureName,int2str(QueryNumber-1),'__',int2str(RoundNumber),'.mat']);
 QueryFeature=feature.x;
+
+%Parameters for estimating gaze
+k_knn=2;
+sigma1=64723;
+%sigma1=376989.5;
+%sigma1 for feature with contour parameters
+sigma2=1674;
+%sigma2=1.0874;
+epsilon=0.1;
 
 %Load training feature matrix.
 for i = 1:36
@@ -55,6 +65,37 @@ for QueryNumber=1:36
         rectangle('Position',[XCor-10,YCor-10,20,20],'EdgeColor','g','LineWidth',2);
         text(XCor,YCor,int2str(i-1));
     end
+    
+    %Calculate the estimate gaze position and display it
+    for y=1:6
+        for x=1:6
+            PositionMatrix(1,(y-1)*6+x)=480/7*y;
+            PositionMatrix(2,(y-1)*6+x)=640/7*x;
+        end
+    end
+    FeatureVector=QueryFeature;
+    for ii = 1:36
+        DistanceMatrix(ii)=(FeatureVector-FeatureMatrix(:,ii))'*(FeatureVector-FeatureMatrix(:,ii));
+    end
+    [SortedDistanceMatrix,index]=sort(DistanceMatrix);
+    disp('QueryNumber');
+    disp(QueryNumber);
+    disp('index:');
+    disp(index);
+    index(find(index==QueryNumber))=[];
+    KNNIndex=index(1:k_knn);
+    TotalIndex(QueryNumber,:)=KNNIndex;
+    for k=1:k_knn
+        AMatrix(:,k)=FeatureMatrix(:,index(k));
+        TrainingWeightMatrix(:,k)=PositionMatrix(:,index(k));
+    end
+    CMatrix=(FeatureVector*ones(k_knn,1)'-AMatrix)'*(FeatureVector*ones(k_knn,1)'-AMatrix);
+    weight=pinv(CMatrix)*ones(k_knn,1);
+    weight=weight./sum(weight);
+    Weight(:,QueryNumber)=weight;
+    EstimatePosition=TrainingWeightMatrix*weight;
+    rectangle('Position',[EstimatePosition(2)-10,480-EstimatePosition(1)-10,20,20],'EdgeColor','c','LineWidth',2);
+    
     pause;
     %figure(2);
 end
