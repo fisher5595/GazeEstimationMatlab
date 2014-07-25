@@ -3,13 +3,13 @@
 clear;
 QueryNumber=10;
 DisplayKnn=6;
-%RoundNumber=4;
+%RoundNumber=1;
 featureName='enlarged_RegisteredFeature_left_';
-feature=load([featureName,int2str(QueryNumber-1),'__',int2str(RoundNumber),'.mat']);
-QueryFeature=feature.x;
+%feature=load([featureName,int2str(QueryNumber-1),'__',int2str(RoundNumber),'.mat']);
+%QueryFeature=feature.x;
 
 %Parameters for estimating gaze
-k_knn=2;
+k_knn=20;
 sigma1=64723;
 %sigma1=376989.5;
 %sigma1 for feature with contour parameters
@@ -49,18 +49,19 @@ end
 for RoundNumber=1:5
     for y=1:6
         for x=1:6
-            PositionMatrix(1,(y-1)*6+x)=480/7*y;
-            PositionMatrix(2,(y-1)*6+x)=640/7*x;
+            PositionMatrix(1,(y-1)*6+x+(RoundNumber-1)*36)=floor(480/7*y);
+            PositionMatrix(2,(y-1)*6+x+(RoundNumber-1)*36)=floor(640/7*x);
         end
     end
 end
-    
-for QueryNumber=1:36
-    feature=load([featureName,int2str(QueryNumber-1),'__',int2str(RoundNumber),'.mat']);
-    QueryFeature=feature.x;
+
+RoundNumber=1;
+TotalError=0;
+for QueryNumber=(1+RoundNumber*36):(36+RoundNumber*36)
+    QueryFeature=FeatureMatrix(:,QueryNumber);
     %Calculate SSD of the 
     SSDOfFeature=[];
-    for i=1:36
+    for i=1:36*5
         SSDOfFeature(i)=sum((double(QueryFeature)-double(FeatureMatrix(:,i))).^2);
     end
     [SortedSSD,SortedIndex]=sort(SSDOfFeature);
@@ -77,23 +78,23 @@ for QueryNumber=1:36
     end
 
     %Draw rectangel with text displaying number
-    XCor=(mod(QueryNumber-1,6)+1)*640/7;
-    YCor=480-(floor((QueryNumber-1)/6)+1)*480/7;
-    rectangle('Position',[XCor-10,YCor-10,20,20],'EdgeColor','r','LineWidth',2);
+    XCor=PositionMatrix(2,QueryNumber);
+    YCor=480-PositionMatrix(1,QueryNumber);
+    rectangle('Position',[XCor-15,YCor-15,30,30],'EdgeColor','r','LineWidth',2);
 
     for i=1:DisplayKnn
         if SortedIndex(i)==QueryNumber;
             continue;
         end
-        XCor=(mod(SortedIndex(i)-1,6)+1)*640/7;
-        YCor=480-(floor((SortedIndex(i)-1)/6)+1)*480/7;
+        XCor=PositionMatrix(2,SortedIndex(i));
+        YCor=480-PositionMatrix(1,SortedIndex(i));
         rectangle('Position',[XCor-10,YCor-10,20,20],'EdgeColor','g','LineWidth',2);
         text(XCor,YCor,int2str(i-1));
     end
     
     %Calculate the estimate gaze position and display it
     FeatureVector=QueryFeature;
-    for ii = 1:36
+    for ii = 1:36*5
         DistanceMatrix(ii)=(FeatureVector-FeatureMatrix(:,ii))'*(FeatureVector-FeatureMatrix(:,ii));
     end
     [SortedDistanceMatrix,index]=sort(DistanceMatrix);
@@ -102,6 +103,7 @@ for QueryNumber=1:36
     disp('index:');
     disp(index);
     index(find(index==QueryNumber))=[];
+
     KNNIndex=index(1:k_knn);
     TotalIndex(QueryNumber,:)=KNNIndex;
     for k=1:k_knn
@@ -114,7 +116,7 @@ for QueryNumber=1:36
     Weight(:,QueryNumber)=weight;
     EstimatePosition=TrainingWeightMatrix*weight;
     rectangle('Position',[EstimatePosition(2)-10,480-EstimatePosition(1)-10,20,20],'EdgeColor','c','LineWidth',2);
-    
+    TotalError=(double(EstimatePosition)-double(PositionMatrix(:,QueryNumber)));
     pause;
     %figure(2);
 end

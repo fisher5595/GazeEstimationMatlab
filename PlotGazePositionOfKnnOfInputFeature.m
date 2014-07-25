@@ -56,6 +56,7 @@ for RoundNumber=1:5
 end
 
 RoundNumber=1;
+TotalError=0;
 for QueryNumber=(1+RoundNumber*36):(36+RoundNumber*36)
     QueryFeature=FeatureMatrix(:,QueryNumber);
     %Calculate SSD of the 
@@ -115,8 +116,10 @@ for QueryNumber=(1+RoundNumber*36):(36+RoundNumber*36)
     Weight(:,QueryNumber)=weight;
     EstimatePosition=TrainingWeightMatrix*weight;
     rectangle('Position',[EstimatePosition(2)-10,480-EstimatePosition(1)-10,20,20],'EdgeColor','c','LineWidth',2);
-    
+    TotalError=TotalError+norm(double(EstimatePosition)-double(PositionMatrix(:,QueryNumber)));
     pause;
     %figure(2);
 end
+
+AvgError=TotalError/36;
 
