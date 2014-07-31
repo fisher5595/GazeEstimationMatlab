@@ -3,7 +3,7 @@ function [ S ] = FindMetricPreservationMatrix( InputFeatureSpace, TargetFeatureS
 %TargetFeatureSpace, output this transformation as Matrix S as the
 %mahalanobis distance, x^T S x.
 %   The affinity of a space uses simplest one as x^Tx.
-epsilon=10000;%epsilon for new solution 1
+epsilon=0.1;
 NumberOfFeatures=size(InputFeatureSpace,2);
 FeatureDimension=size(InputFeatureSpace,1);
 
@@ -22,7 +22,7 @@ while 1
     for i=1:FeatureDimension
         NewNewS=NewNewS+max(0,Lampda(i,i))*U(:,i)*U(:,i)';
     end
-    if sum(sum((NewNewS-S).^2))<=1
+    if sum(sum((NewNewS-S).^2))<=0.00001
         disp(sum(sum((NewNewS-S).^2)));
         break;
     else

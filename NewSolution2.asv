@@ -3,6 +3,7 @@
 %Load features
 clear;
 k_knn=20;
+lamda=1;
 featureName='enlarged_RegisteredFeature_left_';
 
 %Load training feature matrix.
@@ -24,7 +25,6 @@ for RoundNumber=1
     end
 end
 
-S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix);
 TotalError=0;
 for QueryNumber=1:36
     QueryFeature=FeatureMatrix(:,QueryNumber);
@@ -44,9 +44,7 @@ for QueryNumber=1:36
         AMatrix(:,k)=FeatureMatrix(:,index(k));
         TrainingWeightMatrix(:,k)=PositionMatrix(:,index(k));
     end
-    CMatrix=(FeatureVector*ones(k_knn,1)'-AMatrix)'*S*(FeatureVector*ones(k_knn,1)'-AMatrix);
-    weight=pinv(CMatrix)*ones(k_knn,1);
-    weight=weight./sum(weight);
+    weight=pinv([AMatrix;lamda*TrainingWeightMatrix'*TrainingWeightMatrix])*[eye(size(FeatureVector,2))]
     EstimatePosition=TrainingWeightMatrix*weight;
     TotalError=TotalError+norm(double(EstimatePosition)-double(PositionMatrix(:,QueryNumber)));
     %figure(2);
