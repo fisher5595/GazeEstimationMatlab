@@ -3,7 +3,7 @@ function [ S ] = FindMetricPreservationMatrix( InputFeatureSpace, TargetFeatureS
 %TargetFeatureSpace, output this transformation as Matrix S as the
 %mahalanobis distance, x^T S x.
 %   The affinity of a space uses simplest one as x^Tx.
-epsilon=10000;%epsilon for new solution 1
+epsilon=100000;%epsilon for new solution 1
 NumberOfFeatures=size(InputFeatureSpace,2);
 FeatureDimension=size(InputFeatureSpace,1);
 
@@ -20,7 +20,7 @@ while 1
     [U,Lampda]=eig(NewS);
     NewNewS=zeros(FeatureDimension);
     for i=1:FeatureDimension
-        NewNewS=NewNewS+max(0,Lampda(i,i))*U(:,i)*U(:,i)';
+        NewNewS=NewNewS+max(0,real(Lampda(i,i)))*U(:,i)*U(:,i)';
     end
     if sum(sum((NewNewS-S).^2))<=1
         disp(sum(sum((NewNewS-S).^2)));
@@ -28,11 +28,22 @@ while 1
     else
         %disp('NewNewS:');
         %disp(NewNewS)
-        disp(NewNewS);
+        %disp(NewNewS);
         disp(sum(sum((NewNewS-S).^2)));
+        InputAffinityMatrix=double(zeros(NumberOfFeatures));
+        TargetAffinityMatrix=double(zeros(NumberOfFeatures));
+        for i=1:NumberOfFeatures
+            for j=1:NumberOfFeatures
+                InputAffinityMatrix(i,j)=InputFeatureSpace(:,i)'*S*InputFeatureSpace(:,j);
+                TargetAffinityMatrix(i,j)=TargetFeatureSpace(:,i)'*TargetFeatureSpace(:,j);
+            end
+        end
+
+        KLDivergense=sum(sum(TargetAffinityMatrix.*log(TargetAffinityMatrix)))-sum(sum(TargetAffinityMatrix.*log(InputAffinityMatrix)));
+        disp('KL');
+        disp(KLDivergense);
         S=NewNewS;
     end
 end
-
 end
 

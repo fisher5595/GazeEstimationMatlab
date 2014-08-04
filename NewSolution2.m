@@ -3,7 +3,7 @@
 %Load features
 clear;
 k_knn=20;
-lamda=100;
+lamda=0.0000000000000000000000001;
 featureName='enlarged_RegisteredFeature_left_';
 
 %Load training feature matrix.

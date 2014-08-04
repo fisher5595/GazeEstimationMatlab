@@ -25,13 +25,20 @@ for RoundNumber=1
 end
 
 S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix);
+figure(1);
+AffinityMatrix1=DisplayAffinityMatrix(FeatureMatrix);
+figure(2);
+AffinityMatrix2=DisplayAffinityMatrix(PositionMatrix);
+figure(3);
+AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,S);
+
 TotalError=0;
 for QueryNumber=1:36
     QueryFeature=FeatureMatrix(:,QueryNumber);
     %Calculate the estimate gaze position and display it
     FeatureVector=QueryFeature;
     for ii = 1:36
-        DistanceMatrix(ii)=(FeatureVector-FeatureMatrix(:,ii))'*(FeatureVector-FeatureMatrix(:,ii));
+        DistanceMatrix(ii)=(FeatureVector-FeatureMatrix(:,ii))'*S*(FeatureVector-FeatureMatrix(:,ii));
     end
     [SortedDistanceMatrix,index]=sort(DistanceMatrix);
     disp('QueryNumber');

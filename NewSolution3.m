@@ -3,7 +3,7 @@
 %Load features
 clear;
 k_knn=20;
-lamda=10;
+lamda=0.0000001;
 featureName='enlarged_RegisteredFeature_left_';
 
 %Load training feature matrix.
@@ -25,14 +25,14 @@ for RoundNumber=1
     end
 end
 
-S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix);
+P=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix);
 TotalError=0;
 for QueryNumber=1:36
     QueryFeature=FeatureMatrix(:,QueryNumber);
     %Calculate the estimate gaze position and display it
     FeatureVector=QueryFeature;
     for ii = 1:36
-        DistanceMatrix(ii)=(FeatureVector-FeatureMatrix(:,ii))'*(FeatureVector-FeatureMatrix(:,ii));
+        DistanceMatrix(ii)=(FeatureVector-FeatureMatrix(:,ii))'*P*(FeatureVector-FeatureMatrix(:,ii));
     end
     [SortedDistanceMatrix,index]=sort(DistanceMatrix);
     disp('QueryNumber');
@@ -45,7 +45,10 @@ for QueryNumber=1:36
         AMatrix(:,k)=FeatureMatrix(:,index(k));
         TrainingWeightMatrix(:,k)=PositionMatrix(:,index(k));
     end
-    weight=pinv([S*AMatrix;lamda*(TrainingWeightMatrix'*TrainingWeightMatrix)])*[S;lamda*AMatrix'*(S'*S)]*QueryFeature;
+    BMatrix=TrainingWeightMatrix;
+    A=AMatrix;
+    B=BMatrix;
+    weight=((A'*P*A+lamda*(B'*B)*lamda*(B'*B))\(A'*P+lamda*(B'*B)*lamda*A'*P))*QueryFeature;
     EstimatePosition=TrainingWeightMatrix*weight;
     TotalError=TotalError+norm(double(EstimatePosition)-double(PositionMatrix(:,QueryNumber)));
     %figure(2);
