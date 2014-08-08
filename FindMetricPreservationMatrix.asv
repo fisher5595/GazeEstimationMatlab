@@ -3,11 +3,10 @@ function [ S ] = FindMetricPreservationMatrix( InputFeatureSpace, TargetFeatureS
 %TargetFeatureSpace, output this transformation as Matrix S as the
 %mahalanobis distance, x^T S x.
 %   The affinity of a space uses simplest one as x^Tx.
-epsilon=0.001;%epsilon for new solution 1
+epsilon=100000;%epsilon for new solution 1
 NumberOfFeatures=size(InputFeatureSpace,2);
 FeatureDimension=size(InputFeatureSpace,1);
-sigma1=64723;
-sigma2=0.1199;
+
 S=eye(FeatureDimension);
 for i=1:NumberOfFeatures
     for j=1:NumberOfFeatures
@@ -70,7 +69,7 @@ while 1
         end
         qs(i,i)=0;
     end
-    deltaS=zeros(FeatureDimension);
+    deltaS=zeros(featuredimension);
     for i=1:NumberOfFeatures
         for j=1:NumberOfFeatures
             deltaS=deltaS+1/(2*sigma2)*(p(i,j)-qs(i,j))*(InputFeatureSpace(:,i)-InputFeatureSpace(:,j))*(InputFeatureSpace(:,i)-InputFeatureSpace(:,j))';
@@ -82,8 +81,8 @@ while 1
     %disp('NewS:');
     %disp(NewS);
     [U,Lampda]=eig(NewS);
-    NewNewS=zeros(FeatureDimension);
-    for i=1:FeatureDimension
+    NewNewS=zeros(featuredimension);
+    for i=1:featuredimension
         NewNewS=NewNewS+max(0,real(Lampda(i,i)))*U(:,i)*U(:,i)';
     end
     if sum(sum((NewNewS-S).^2))<=0.00001
@@ -92,11 +91,10 @@ while 1
     else
         %disp('NewNewS:');
         %disp(NewNewS)
-        disp(sum(sum((NewNewS-S).^2)));
         S=NewNewS;
     end
-%     disp('Qs-P');
-%     disp(qs-p);
+    disp('Qs-P');
+    disp(qs-p);
 end
 end
 

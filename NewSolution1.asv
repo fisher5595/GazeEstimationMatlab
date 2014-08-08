@@ -26,11 +26,11 @@ end
 
 S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix);
 figure(1);
-AffinityMatrix1=DisplayAffinityMatrix(FeatureMatrix, 0.1199);
+AffinityMatrix1=DisplayAffinityMatrix(FeatureMatrix,);
 figure(2);
 AffinityMatrix2=DisplayAffinityMatrix(PositionMatrix,64723);
 figure(3);
-AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.1199,S);
+AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,S);
 
 TotalError=0;
 for QueryNumber=1:36
