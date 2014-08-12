@@ -55,14 +55,14 @@ TotalError=0;
 
 %Further normalize the transfromed normalized feature space
 for i = 1:36
-    NormalizedFeatureMatrix(:,i+(RoundNumber-1)*36)=FeatureMatrix(:,i+(RoundNumber-1)*36)./sqrt(FeatureMatrix(:,i+(RoundNumber-1)*36)'*P*FeatureMatrix(:,i+(RoundNumber-1)*36)); 
+    NormalizedTransformedFeatureMatrix(:,i+(RoundNumber-1)*36)=FeatureMatrix(:,i+(RoundNumber-1)*36)./norm(FeatureMatrix(:,i+(RoundNumber-1)*36)); 
 end
 for QueryNumber=1:36
-    QueryFeature=NormalizedFeatureMatrix(:,QueryNumber);
+    QueryFeature=FeatureMatrix(:,QueryNumber);
     %Calculate the estimate gaze position and display it
     FeatureVector=QueryFeature;
     for ii = 1:36
-        DistanceMatrix(ii)=(FeatureVector-NormalizedFeatureMatrix(:,ii))'*P*(FeatureVector-NormalizedFeatureMatrix(:,ii));
+        DistanceMatrix(ii)=(FeatureVector-FeatureMatrix(:,ii))'*P*(FeatureVector-FeatureMatrix(:,ii));
     end
     [SortedDistanceMatrix,index]=sort(DistanceMatrix);
     disp('QueryNumber');
@@ -73,15 +73,13 @@ for QueryNumber=1:36
 
     for k=1:k_knn
         AMatrix(:,k)=FeatureMatrix(:,index(k));
-        TrainingWeightMatrix(:,k)=RelativePositionMatrix(:,index(k));
+        TrainingWeightMatrix(:,k)=PositionMatrix(:,index(k));
     end
     BMatrix=TrainingWeightMatrix;
     A=AMatrix;
     B=BMatrix;
     weight=((A'*P*A+lamda*(B'*B)*lamda*(B'*B))\(A'*P+lamda*(B'*B)*lamda*A'*P))*QueryFeature;
-    EstimateRelativePosition=TrainingWeightMatrix*weight;
-    Result=fsolve(@(x) RelativePositonToAbsolute(x,EstimateRelativePosition),[1,1,100],optimset('Display','off'));
-    EstimatePosition(:,1)=Result(1:2);
+    EstimatePosition=TrainingWeightMatrix*weight;
     TotalError=TotalError+norm(double(EstimatePosition)-double(PositionMatrix(:,QueryNumber)));
     %figure(2);
 end

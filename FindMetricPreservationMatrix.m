@@ -1,4 +1,4 @@
-function [ S ] = FindMetricPreservationMatrix( InputFeatureSpace, TargetFeatureSpace )
+function [ S ] = FindMetricPreservationMatrix( InputFeatureSpace, TargetFeatureSpace, Sigma1, Sigma2 )
 %This function finds a transformation between InputFeatureSpace and
 %TargetFeatureSpace, output this transformation as Matrix S as the
 %mahalanobis distance, x^T S x.
@@ -6,8 +6,13 @@ function [ S ] = FindMetricPreservationMatrix( InputFeatureSpace, TargetFeatureS
 epsilon=0.001;%epsilon for new solution 1
 NumberOfFeatures=size(InputFeatureSpace,2);
 FeatureDimension=size(InputFeatureSpace,1);
-sigma1=64723;
-sigma2=0.1199;
+if nargin<3
+    sigma1=64723;
+    sigma2=0.1199;
+else
+    sigma1=Sigma1;
+    sigma2=Sigma2;
+end
 S=eye(FeatureDimension);
 for i=1:NumberOfFeatures
     for j=1:NumberOfFeatures

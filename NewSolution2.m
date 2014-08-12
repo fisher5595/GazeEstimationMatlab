@@ -38,7 +38,7 @@ for RoundNumber=1
             RelativePositionMatrix(1,(y-1)*6+x+(RoundNumber-1)*36)=norm(PositionMatrix(:,1)-PositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
             RelativePositionMatrix(2,(y-1)*6+x+(RoundNumber-1)*36)=norm(PositionMatrix(:,6)-PositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
             RelativePositionMatrix(3,(y-1)*6+x+(RoundNumber-1)*36)=norm(PositionMatrix(:,31)-PositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
-            RelativePositionMatrix(4,(y-1)*6+x+(RoundNumber-1)*36)=norm(PositionMatrix(:,36)-PositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
+            %RelativePositionMatrix(4,(y-1)*6+x+(RoundNumber-1)*36)=norm(PositionMatrix(:,36)-PositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
             RelativePositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36)=RelativePositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36)./norm(RelativePositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
         end
     end
