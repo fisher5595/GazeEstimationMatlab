@@ -8,7 +8,7 @@ clear;
 clc;
 img_basename='new_data/test_enlarged_ResizedEyes_right_';
 img_extention_name='.jpg';
-sample_round=3;
+sample_round=5;
 img_amount=36;
 TotalX=[];
 TotalY=[];
