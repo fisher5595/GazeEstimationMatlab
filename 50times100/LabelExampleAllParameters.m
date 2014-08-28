@@ -6,7 +6,7 @@
 % iris circle.
 clear;
 clc;
-img_basename='new_data/test_enlarged_ResizedEyes_left_';
+img_basename='new_data/test_enlarged_ResizedEyes_right_';
 img_extention_name='.jpg';
 sample_round=3;
 img_amount=36;
@@ -72,7 +72,7 @@ while ImgCount<=img_amount
     end
 end
 
-SaveFileNamePrefix='Training_Aug27_';
+SaveFileNamePrefix='Training_Aug27_right_';
 SaveFileNameSuffix='.mat';
 x=Xc;
 save([SaveFileNamePrefix,'Xc', '__', int2str(sample_round), SaveFileNameSuffix],'x');
