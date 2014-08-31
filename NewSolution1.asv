@@ -62,14 +62,14 @@ end
 
 % one eye feature
 %S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix);
-% two eye feature
-% S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix,64723,0.5383);
-% figure(1);
-% AffinityMatrix1=DisplayAffinityMatrix(FeatureMatrix, 0.5383);
-% figure(2);
-% AffinityMatrix2=DisplayAffinityMatrix(PositionMatrix,64723);
-% figure(3);
-% AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.5383,S);
+% one eye feature
+%S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix);
+figure(1);
+AffinityMatrix1=DisplayAffinityMatrix(FeatureMatrix, 0.1199);
+figure(2);
+AffinityMatrix2=DisplayAffinityMatrix(PositionMatrix,64723);
+figure(3);
+AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.1199,S);
 
 S=eye(size(FeatureMatrix,1));
 TotalError=0;
