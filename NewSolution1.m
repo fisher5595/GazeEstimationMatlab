@@ -3,10 +3,10 @@
 %Load features
 clear;
 k_knn=20;
-featureName='enlarged_RegisteredFeature_left_';
+featureName='enlarged_RegisteredFeature_Aug27_left_';
 
 %Load training feature matrix.
-for RoundNumber=1:3
+for RoundNumber=1:4
     for i = 1:36
         feature=load([featureName,int2str(i-1),'__',int2str(RoundNumber),'.mat']);
         featurevector=feature.x;
@@ -15,7 +15,7 @@ for RoundNumber=1:3
 end
 
 %Load testing feature matrix
-for RoundNumber=4
+for RoundNumber=5
     for i = 1:36
         feature=load([featureName,int2str(i-1),'__',int2str(RoundNumber),'.mat']);
         featurevector=feature.x;
@@ -30,7 +30,7 @@ end
 % end
 
 %Generate all training position information, stored in a PositionMatrix.
-for RoundNumber=1:3
+for RoundNumber=1:4
     for y=1:6
         for x=1:6
             PositionMatrix(1,(y-1)*6+x+(RoundNumber-1)*36)=floor(480/7*y);
@@ -40,11 +40,11 @@ for RoundNumber=1:3
 end
 
 %Generate testing positon information
-for RoundNumber=1
+for RoundNumber=5
     for y=1:6
         for x=1:6
-            TestingPositionMatrix(1,(y-1)*6+x+(RoundNumber-1)*36)=floor(480/7*y);
-            TestingPositionMatrix(2,(y-1)*6+x+(RoundNumber-1)*36)=floor(640/7*x);
+            TestingPositionMatrix(1,(y-1)*6+x)=floor(480/7*y);
+            TestingPositionMatrix(2,(y-1)*6+x)=floor(640/7*x);
         end
     end
 end
@@ -55,15 +55,15 @@ end
 %         TestingPositionMatrix(:,i)=PositionMatrix(:,2*(i-1)+2);
 % end
 
-S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix);
-figure(1);
-AffinityMatrix1=DisplayAffinityMatrix(FeatureMatrix, 0.1199);
-figure(2);
-AffinityMatrix2=DisplayAffinityMatrix(PositionMatrix,64723);
-figure(3);
-AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.1199,S);
+% S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix);
+% figure(1);
+% AffinityMatrix1=DisplayAffinityMatrix(FeatureMatrix, 0.1199);
+% figure(2);
+% AffinityMatrix2=DisplayAffinityMatrix(PositionMatrix,64723);
+% figure(3);
+% AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.1199,S);
 
-%S=eye(size(FeatureMatrix,1));
+S=eye(size(FeatureMatrix,1));
 TotalError=0;
 for QueryNumber=1:36
     QueryFeature=TestingFeatureMatrix(:,QueryNumber);
