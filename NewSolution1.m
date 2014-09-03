@@ -48,11 +48,9 @@ end
 for RoundNumber=1:4
     for y=1:6
         for x=1:6
-            RelativePositionMatrix(1,(y-1)*6+x+(RoundNumber-1)*36)=norm(PositionMatrix(:,1)-PositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
-            RelativePositionMatrix(2,(y-1)*6+x+(RoundNumber-1)*36)=norm(PositionMatrix(:,6)-PositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
-            RelativePositionMatrix(3,(y-1)*6+x+(RoundNumber-1)*36)=norm(PositionMatrix(:,31)-PositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
-            RelativePositionMatrix(4,(y-1)*6+x+(RoundNumber-1)*36)=norm(PositionMatrix(:,36)-PositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
-            RelativePositionMatrix(5,(y-1)*6+x+(RoundNumber-1)*36)=norm([(480-1)/2;(640-1)/2;]-PositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
+            for i=1:36
+                RelativePositionMatrix(i,(y-1)*6+x+(RoundNumber-1)*36)=norm(PositionMatrix(:,i)-PositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
+            end
             RelativePositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36)=RelativePositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36)./norm(RelativePositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
         end
     end
@@ -86,7 +84,10 @@ end
 % AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.5383,S);
 
 %Normalized relative gaze position
-S=FindMetricPreservationMatrix(FeatureMatrix,RelativePositionMatrix,0.0686,0.5383);
+%Absolute gaze sigma
+%S=FindMetricPreservationMatrix(FeatureMatrix,RelativePositionMatrix,0.0686,0.5383);
+%36 point relative gaze sigma
+S=FindMetricPreservationMatrix(FeatureMatrix,RelativePositionMatrix,0.0452,0.5383);
 figure(1);
 AffinityMatrix1=DisplayAffinityMatrix(FeatureMatrix, 0.5383);
 figure(2);
@@ -94,7 +95,7 @@ AffinityMatrix2=DisplayAffinityMatrix(RelativePositionMatrix,0.0686);
 figure(3);
 AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.5383,S);
 
-%S=eye(size(FeatureMatrix,1));
+% S=eye(size(FeatureMatrix,1));
 TotalError=0;
 for QueryNumber=1:36
     QueryFeature=TestingFeatureMatrix(:,QueryNumber);

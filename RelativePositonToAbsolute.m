@@ -6,23 +6,17 @@ function FunctionValue = RelativePositonToAbsolute( CoordinateAndLengthUnit,Rela
 %   axis,CoordinateAndLengthUnit(3) is the normalized length unit.
 %   RelativePosition including the normalized length to
 %   upleft,upright,bottomleft,and bottom right corner.
-AnchorCoordinate=double(zeros(2,4));
-AnchorCoordinate(1,1)=floor(480/7*1);
-AnchorCoordinate(2,1)=floor(640/7*1);
-AnchorCoordinate(1,2)=floor(480/7*1);
-AnchorCoordinate(2,2)=floor(640/7*6);
-AnchorCoordinate(1,3)=floor(480/7*6);
-AnchorCoordinate(2,3)=floor(640/7*1);
-AnchorCoordinate(1,4)=floor(480/7*6);
-AnchorCoordinate(2,4)=floor(640/7*6);
-AnchorCoordinate(1,5)=(480-1)/2;
-AnchorCoordinate(2,5)=(640-1)/2;
+AnchorCoordinate=zeros(2,36);
+for y=1:6
+    for x=1:6
+        AnchorCoordinate(1,(y-1)*6+x)=floor(480/7*y);
+        AnchorCoordinate(2,(y-1)*6+x)=floor(640/7*x);
+    end
+end
 
-FunctionValue(1)=((CoordinateAndLengthUnit(1)'-AnchorCoordinate(1,1)).^2+(CoordinateAndLengthUnit(2)'-AnchorCoordinate(2,1)).^2-(CoordinateAndLengthUnit(3)*RelativePosition(1)).^2).^2;
-FunctionValue(2)=((CoordinateAndLengthUnit(1)'-AnchorCoordinate(1,2)).^2+(CoordinateAndLengthUnit(2)'-AnchorCoordinate(2,2)).^2-(CoordinateAndLengthUnit(3)*RelativePosition(2)).^2).^2;
-FunctionValue(3)=((CoordinateAndLengthUnit(1)'-AnchorCoordinate(1,3)).^2+(CoordinateAndLengthUnit(2)'-AnchorCoordinate(2,3)).^2-(CoordinateAndLengthUnit(3)*RelativePosition(3)).^2).^2;
-FunctionValue(4)=((CoordinateAndLengthUnit(1)'-AnchorCoordinate(1,4)).^2+(CoordinateAndLengthUnit(2)'-AnchorCoordinate(2,4)).^2-(CoordinateAndLengthUnit(3)*RelativePosition(4)).^2).^2;
-FunctionValue(5)=((CoordinateAndLengthUnit(1)'-AnchorCoordinate(1,5)).^2+(CoordinateAndLengthUnit(2)'-AnchorCoordinate(2,5)).^2-(CoordinateAndLengthUnit(3)*RelativePosition(5)).^2).^2;
+for i=1:36
+    FunctionValue(i)=((CoordinateAndLengthUnit(1)'-AnchorCoordinate(1,i)).^2+(CoordinateAndLengthUnit(2)'-AnchorCoordinate(2,i)).^2-(CoordinateAndLengthUnit(3)*RelativePosition(i)).^2).^2;
+end
 
 end
 
