@@ -136,4 +136,7 @@ for QueryNumber=1:36
     TotalError=TotalError+norm(double(EstimatePosition)-double(PositionMatrix(:,QueryNumber)));
     %figure(2);
 end
+
+disp('AvgError');
 AvgError=TotalError/36;
+disp(AvgError);
