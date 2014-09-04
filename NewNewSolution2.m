@@ -4,7 +4,7 @@
 clear;
 k_knn=20;
 lamda=0.0001;
-steplength=0.0000001;
+steplength=1E-12;
 featureName='enlarged_RegisteredFeature_Aug27_left_';
 rightfeatureName='enlarged_RegisteredFeature_Aug27_right_';
 
@@ -66,7 +66,7 @@ for QueryNumber=1:36
 %     AffinityMatrix2=DisplayAffinityMatrix(TrainingPositionMatrix,64723);
 %     figure(3);
 %     AffinityMatrix3=DisplayAffinityMatrix(TrainingFeatureMatrix,0.1199,S);
-    for ii = 1:36*3
+    for ii = 1:36*4
         DistanceMatrix(ii)=(FeatureVector-TrainingFeatureMatrix(:,ii))'*(FeatureVector-TrainingFeatureMatrix(:,ii));
     end
     [SortedDistanceMatrix,index]=sort(DistanceMatrix);
@@ -92,7 +92,7 @@ for QueryNumber=1:36
             end
         end
         Newweight=weight-steplength*Gradient;
-        if norm(Newweight-weight)>0.001
+        if norm(Newweight-weight)>0.00001
             TragetfuncitonValue=norm(FeatureVector-AMatrix*weight)^2;
             for RoundNumber=1:4
                 for i=1:36
