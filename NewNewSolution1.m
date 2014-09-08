@@ -1,4 +1,4 @@
-%Refer to Professor Wu's new method pdf, new solution 1.
+%Refer to Professor Wu's new method pdf, new solution 1. Use relatvie gaze
 
 %Load features
 clear;
@@ -48,10 +48,9 @@ end
 for RoundNumber=1:4
     for y=1:6
         for x=1:6
-            RelativePositionMatrix(1,(y-1)*6+x+(RoundNumber-1)*36)=norm(PositionMatrix(:,1)-PositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
-            RelativePositionMatrix(2,(y-1)*6+x+(RoundNumber-1)*36)=norm(PositionMatrix(:,6)-PositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
-            RelativePositionMatrix(3,(y-1)*6+x+(RoundNumber-1)*36)=norm(PositionMatrix(:,31)-PositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
-            %RelativePositionMatrix(4,(y-1)*6+x+(RoundNumber-1)*36)=norm(PositionMatrix(:,36)-PositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
+            for i=1:36
+                RelativePositionMatrix(i,(y-1)*6+x+(RoundNumber-1)*36)=PositionMatrix(:,i)'*PositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36);
+            end
             RelativePositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36)=RelativePositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36)./norm(RelativePositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
         end
     end
@@ -85,15 +84,18 @@ end
 % AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.5383,S);
 
 %Normalized relative gaze position
-S=FindMetricPreservationMatrix(FeatureMatrix,RelativePositionMatrix,0.0686,0.5383);
-figure(1);
-AffinityMatrix1=DisplayAffinityMatrix(FeatureMatrix, 0.5383);
-figure(2);
-AffinityMatrix2=DisplayAffinityMatrix(RelativePositionMatrix,0.0686);
-figure(3);
-AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.5383,S);
+%Absolute gaze sigma
+%S=FindMetricPreservationMatrix(FeatureMatrix,RelativePositionMatrix,0.0686,0.5383);
+%36 point relative gaze sigma
+% S=FindMetricPreservationMatrix(FeatureMatrix,RelativePositionMatrix,0.0452,0.5383);
+% figure(1);
+% AffinityMatrix1=DisplayAffinityMatrix(FeatureMatrix, 0.5383);
+% figure(2);
+% AffinityMatrix2=DisplayAffinityMatrix(RelativePositionMatrix,0.0686);
+% figure(3);
+% AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.5383,S);
 
-%S=eye(size(FeatureMatrix,1));
+S=eye(size(FeatureMatrix,1));
 TotalError=0;
 for QueryNumber=1:36
     QueryFeature=TestingFeatureMatrix(:,QueryNumber);
@@ -110,7 +112,7 @@ for QueryNumber=1:36
 %     AffinityMatrix2=DisplayAffinityMatrix(TrainingPositionMatrix,64723);
 %     figure(3);
 %     AffinityMatrix3=DisplayAffinityMatrix(TrainingFeatureMatrix,0.1199,S);
-    for ii = 1:36*3
+    for ii = 1:36*4
         DistanceMatrix(ii)=(FeatureVector-TrainingFeatureMatrix(:,ii))'*S*(FeatureVector-TrainingFeatureMatrix(:,ii));
     end
     [SortedDistanceMatrix,index]=sort(DistanceMatrix);
@@ -127,12 +129,15 @@ for QueryNumber=1:36
     CMatrix=(FeatureVector*ones(k_knn,1)'-AMatrix)'*S*(FeatureVector*ones(k_knn,1)'-AMatrix);
     weight=pinv(CMatrix)*ones(k_knn,1);
     weight=weight./sum(weight);
-    %Estimation for ab
-    EstimatePosition=TrainingWeightMatrix*weight;
-    TotalError=TotalError+norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber)));
-    Result=fsolve(@(x) RelativePositonToAbsolute(x,EstimateRelativePosition),[1,1,100],optimset('Display','off'));
-    EstimatePosition(:,1)=Result(1:2);
+%     %Estimation for absolute gaze position
+%     EstimatePosition=TrainingWeightMatrix*weight;
+%     TotalError=TotalError+norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber)));
+    EstimateRelativePosition=TrainingWeightMatrix*weight;
+    EstimatePosition=pinv(TestingPositionMatrix')*EstimateRelativePosition./norm(EstimateRelativePosition);
     TotalError=TotalError+norm(double(EstimatePosition)-double(PositionMatrix(:,QueryNumber)));
     %figure(2);
 end
+
+disp('AvgError');
 AvgError=TotalError/36;
+disp(AvgError);

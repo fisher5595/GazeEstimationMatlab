@@ -1,4 +1,4 @@
-%Refer to Professor Wu's new method pdf, new solution 1.
+%Refer to Professor Wu's new method pdf, new solution 1. Use relatvie gaze
 
 %Load features
 clear;
@@ -49,7 +49,7 @@ for RoundNumber=1:4
     for y=1:6
         for x=1:6
             for i=1:36
-                RelativePositionMatrix(i,(y-1)*6+x+(RoundNumber-1)*36)=norm(PositionMatrix(:,i)-PositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
+                RelativePositionMatrix(i,(y-1)*6+x+(RoundNumber-1)*36)=PositionMatrix(:,i)'*PositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36);
             end
             RelativePositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36)=RelativePositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36)./norm(RelativePositionMatrix(:,(y-1)*6+x+(RoundNumber-1)*36));
         end
@@ -133,8 +133,7 @@ for QueryNumber=1:36
 %     EstimatePosition=TrainingWeightMatrix*weight;
 %     TotalError=TotalError+norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber)));
     EstimateRelativePosition=TrainingWeightMatrix*weight;
-    Result=fsolve(@(x) RelativePositonToAbsolute(x,EstimateRelativePosition),[1,1,100],optimset('Display','off','TolFun',1e-16));
-    EstimatePosition(:,1)=Result(1:2);
+    EstimatePosition=pinv(TestingPositionMatrix)    
     TotalError=TotalError+norm(double(EstimatePosition)-double(PositionMatrix(:,QueryNumber)));
     %figure(2);
 end
