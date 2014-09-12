@@ -3,8 +3,8 @@
 %Load features
 clear;
 k_knn=20;
-lamda=0.0001;
-steplength=1E-6;
+lamda=0.01;
+steplength=1E-4;
 featureName='enlarged_RegisteredFeature_Aug27_left_';
 rightfeatureName='enlarged_RegisteredFeature_Aug27_right_';
 
@@ -92,27 +92,27 @@ for QueryNumber=1:36
         Gradient=-2*A'*S*(FeatureVector-A*weight);
         W=double(zeros(36*4,1));
         P=double(zeros(36*4,1));
+        Us=double(zeros(36*4,1));
+        Qs=double(zeros(36*4,1));
         for i=1:36*4
             W(i)=exp(-(B*weight-TrainingPositionMatrix(:,i))'*(B*weight-TrainingPositionMatrix(:,i))/2/64723);
+            Us(i)=exp(-(QueryFeature-TrainingFeatureMatrix(:,i))'*S*(QueryFeature-TrainingFeatureMatrix(:,i))/2/0.5383);
         end
         SumW=sum(W);
+        SumUs=sum(Us);
         for i=1:36*4
             P(i)=W(i)/SumW;
+            Qs(i)=Us(i)/SumUs;
         end
         for i=1:36*4
-            Gradient=Gradient+lamda/64723*P(i)*log(P(i))*B'*TrainingPositionMatrix(:,i);
+            Gradient=Gradient+lamda/64723*P(i)*log(P(i)/Qs(i))*B'*TrainingPositionMatrix(:,i);
             for j=1:36*4
-                Gradient=Gradient-lamda/64723*P(i)*log(P(i))*P(j)*B'*TrainingPositionMatrix(:,j);
+                Gradient=Gradient-lamda/64723*P(i)*log(P(i)/Qs(i))*P(j)*B'*TrainingPositionMatrix(:,j);
             end
         end
         Newweight=weight-steplength*Gradient;
-        if norm(Newweight-weight)>0.00001
-            TragetfuncitonValue=(FeatureVector-AMatrix*weight)'*S*(FeatureVector-AMatrix*weight);
-            for RoundNumber=1:4
-                for i=1:36
-                    TragetfuncitonValue=TragetfuncitonValue+lamda*((FeatureVector-TrainingFeatureMatrix(:,i+(RoundNumber-1)*36))'*S*(FeatureVector-TrainingFeatureMatrix(:,i+(RoundNumber-1)*36))-norm(BMatrix*weight-TrainingPositionMatrix(:,i+(RoundNumber-1)*36)))^2;
-                end
-            end
+        if norm(Newweight-weight)>0.0000001
+            TragetfuncitonValue=(FeatureVector-AMatrix*weight)'*S*(FeatureVector-AMatrix*weight)+lamda*(sum(P.*log(P))-sum(P.*log(Qs)));
             disp('TargetFunctionValue');
             disp(TragetfuncitonValue);
             weight=Newweight;
