@@ -3,8 +3,8 @@
 %Load features
 clear;
 k_knn=20;
-lamda=0.01;
-steplength=1E-4;
+lamda=1;
+steplength=1E-5;
 featureName='enlarged_RegisteredFeature_Aug27_left_';
 rightfeatureName='enlarged_RegisteredFeature_Aug27_right_';
 
@@ -113,8 +113,9 @@ for QueryNumber=1:36
         Newweight=weight-steplength*Gradient;
         if norm(Newweight-weight)>0.0000001
             TragetfuncitonValue=(FeatureVector-AMatrix*weight)'*S*(FeatureVector-AMatrix*weight)+lamda*(sum(P.*log(P))-sum(P.*log(Qs)));
-            disp('TargetFunctionValue');
-            disp(TragetfuncitonValue);
+            disp(['TargetFunctionValue' ':' int2str(QueryNumber)]);
+            fprintf(' %.10f\n ',TragetfuncitonValue);
+            %disp(TragetfuncitonValue);
             weight=Newweight;
         else
             break;
