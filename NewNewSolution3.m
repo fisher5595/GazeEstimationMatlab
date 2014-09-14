@@ -86,9 +86,10 @@ for QueryNumber=1:36
     CMatrix=(FeatureVector*ones(k_knn,1)'-AMatrix)'*S*(FeatureVector*ones(k_knn,1)'-AMatrix);
     weight=pinv(CMatrix)*ones(k_knn,1);
     weight=weight./sum(weight);
-   
+    
     % Gradient descent for new solution 3 target function
-    while 1
+    LoopCounter=1000;
+    while LoopCounter>=0
         Gradient=-2*A'*S*(FeatureVector-A*weight);
         W=double(zeros(36*4,1));
         P=double(zeros(36*4,1));
@@ -117,6 +118,7 @@ for QueryNumber=1:36
             fprintf(' %.10f\n ',TragetfuncitonValue);
             %disp(TragetfuncitonValue);
             weight=Newweight;
+            LoopCounter=LoopCounter-1;
         else
             break;
         end
