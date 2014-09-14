@@ -88,7 +88,7 @@ for QueryNumber=1:36
     weight=weight./sum(weight);
     
     % Gradient descent for new solution 3 target function
-    LoopCounter=1000;
+    LoopCounter=100;
     while LoopCounter>=0
         Gradient=-2*A'*S*(FeatureVector-A*weight);
         W=double(zeros(36*4,1));
@@ -128,3 +128,5 @@ for QueryNumber=1:36
     %figure(2);
 end
 AvgError=TotalError/36;
+disp('AvgError');
+disp(AvgError);
