@@ -75,14 +75,17 @@ end
 % one eye feature, sigma is default in Find... function
 %S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix);
 % two eye feature
-% S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix,64723,0.5383);
-% figure(1);
-% AffinityMatrix1=DisplayAffinityMatrix(FeatureMatrix, 0.5383);
-% figure(2);
-% AffinityMatrix2=DisplayAffinityMatrix(PositionMatrix,64723);
-% figure(3);
-% AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.5383,S);
-
+ S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix,64723,0.5383);
+ figure(1);
+ AffinityMatrix1=DisplayAffinityMatrix(FeatureMatrix, 0.5383);
+ figure(2);
+ AffinityMatrix2=DisplayAffinityMatrix(PositionMatrix,64723);
+ figure(3);
+ AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.5383,S);
+ x.x=S;
+ save(['S_10-9','.mat'],'-struct','x');
+%S=load(['S_10-8','.mat']);
+%S=S.x;
 %Normalized relative gaze position
 %Absolute gaze sigma
 %S=FindMetricPreservationMatrix(FeatureMatrix,RelativePositionMatrix,0.0686,0.5383);
@@ -95,13 +98,13 @@ end
 % figure(3);
 % AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.5383,S);
 
-S=eye(size(FeatureMatrix,1));
+%S=eye(size(FeatureMatrix,1));
 TotalError=0;
 for QueryNumber=1:36
     QueryFeature=TestingFeatureMatrix(:,QueryNumber);
     TrainingFeatureMatrix=FeatureMatrix;
     %TrainingFeatureMatrix(:,QueryNumber)=[];
-    TrainingPositionMatrix=RelativePositionMatrix;
+    TrainingPositionMatrix=PositionMatrix;
     %TrainingPositionMatrix(:,QueryNumber)=[];
     %Calculate the estimate gaze position and display it
     FeatureVector=QueryFeature;
@@ -130,12 +133,12 @@ for QueryNumber=1:36
     weight=pinv(CMatrix)*ones(k_knn,1);
     weight=weight./sum(weight);
 %     %Estimation for absolute gaze position
-%     EstimatePosition=TrainingWeightMatrix*weight;
-%     TotalError=TotalError+norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber)));
-    EstimateRelativePosition=TrainingWeightMatrix*weight;
-    Result=fsolve(@(x) RelativePositonToAbsolute(x,EstimateRelativePosition),[1,1,100],optimset('Display','off','TolFun',1e-16));
-    EstimatePosition(:,1)=Result(1:2);
-    TotalError=TotalError+norm(double(EstimatePosition)-double(PositionMatrix(:,QueryNumber)));
+     EstimatePosition=TrainingWeightMatrix*weight;
+     TotalError=TotalError+norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber)));
+%    EstimateRelativePosition=TrainingWeightMatrix*weight;
+%    Result=fsolve(@(x) RelativePositonToAbsolute(x,EstimateRelativePosition),[1,1,100],optimset('Display','off','TolFun',1e-16));
+%    EstimatePosition(:,1)=Result(1:2);
+%    TotalError=TotalError+norm(double(EstimatePosition)-double(PositionMatrix(:,QueryNumber)));
     %figure(2);
 end
 

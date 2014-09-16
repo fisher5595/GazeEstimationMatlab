@@ -91,7 +91,7 @@ while 1
     for i=1:FeatureDimension
         NewNewS=NewNewS+max(0,real(Lampda(i,i)))*U(:,i)*U(:,i)';
     end
-    if sum(sum((NewNewS-S).^2))<=0.00001
+    if sum(sum((NewNewS-S).^2))<=0.000000001
         disp(sum(sum((NewNewS-S).^2)));
         break;
     else

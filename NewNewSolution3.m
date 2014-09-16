@@ -51,14 +51,18 @@ for RoundNumber=5
 end
 
 % two eye feature
-S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix,64723,0.5383);
-figure(1);
-AffinityMatrix1=DisplayAffinityMatrix(FeatureMatrix, 0.5383);
-figure(2);
-AffinityMatrix2=DisplayAffinityMatrix(PositionMatrix,64723);
-figure(3);
-AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.5383,S);
-
+%S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix,64723,0.5383);
+%figure(1);
+%AffinityMatrix1=DisplayAffinityMatrix(FeatureMatrix, 0.5383);
+%figure(2);
+%AffinityMatrix2=DisplayAffinityMatrix(PositionMatrix,64723);
+%figure(3);
+%AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.5383,S);
+%x.x=S;
+%save(['s_10-9' '.mat'],'-struct','x');
+%Load S matrix from previous result
+S=load(['S_10-9' '.mat']);
+S=S.x;
 TotalError=0;
 for QueryNumber=1:36
     QueryFeature=TestingFeatureMatrix(:,QueryNumber);
@@ -88,7 +92,7 @@ for QueryNumber=1:36
     weight=weight./sum(weight);
     
     % Gradient descent for new solution 3 target function
-    LoopCounter=100;
+    LoopCounter=1000;
     while LoopCounter>=0
         Gradient=-2*A'*S*(FeatureVector-A*weight);
         W=double(zeros(36*4,1));
