@@ -2,9 +2,9 @@
 
 %Load features
 clear;
-k_knn=20;
-lamda=1;
-steplength=1E-5;
+k_knn=30;
+%lamda=1;
+steplength=1E-4;
 featureName='enlarged_RegisteredFeature_Aug27_left_';
 rightfeatureName='enlarged_RegisteredFeature_Aug27_right_';
 
@@ -61,8 +61,13 @@ end
 %x.x=S;
 %save(['s_10-9' '.mat'],'-struct','x');
 %Load S matrix from previous result
-S=load(['S_10-9' '.mat']);
+S=load(['S_10-10' '.mat']);
 S=S.x;
+BestLambda=0;
+BestError=0;
+Errors=zeros(floor((1.2-0.7)*10)+1,1);
+disp(size(Errors));
+for lamda=0.7:0.1:1.2
 TotalError=0;
 for QueryNumber=1:36
     QueryFeature=TestingFeatureMatrix(:,QueryNumber);
@@ -74,14 +79,13 @@ for QueryNumber=1:36
         DistanceMatrix(ii)=(FeatureVector-TrainingFeatureMatrix(:,ii))'*S*(FeatureVector-TrainingFeatureMatrix(:,ii));
     end
     [SortedDistanceMatrix,index]=sort(DistanceMatrix);
-    disp('QueryNumber');
-    disp(QueryNumber);
+    fprintf('Lambda[%2.1f] QueryNumber[%d]\n', lamda,QueryNumber);
     %disp('index:');
     %disp(index);
     %index(find(index==QueryNumber))=[];
 
     for k=1:k_knn
-        AMatrix(:,k)=FeatureMatrix(:,index(k));
+        AMatrix(:,k)=TrainingFeatureMatrix(:,index(k));
         TrainingWeightMatrix(:,k)=TrainingPositionMatrix(:,index(k));
     end
     BMatrix=TrainingWeightMatrix;
@@ -91,46 +95,64 @@ for QueryNumber=1:36
     weight=pinv(CMatrix)*ones(k_knn,1);
     weight=weight./sum(weight);
     
-    % Gradient descent for new solution 3 target function
-    LoopCounter=1000;
-    while LoopCounter>=0
-        Gradient=-2*A'*S*(FeatureVector-A*weight);
-        W=double(zeros(36*4,1));
-        P=double(zeros(36*4,1));
-        Us=double(zeros(36*4,1));
-        Qs=double(zeros(36*4,1));
-        for i=1:36*4
-            W(i)=exp(-(B*weight-TrainingPositionMatrix(:,i))'*(B*weight-TrainingPositionMatrix(:,i))/2/64723);
-            Us(i)=exp(-(QueryFeature-TrainingFeatureMatrix(:,i))'*S*(QueryFeature-TrainingFeatureMatrix(:,i))/2/0.5383);
-        end
-        SumW=sum(W);
-        SumUs=sum(Us);
-        for i=1:36*4
-            P(i)=W(i)/SumW;
-            Qs(i)=Us(i)/SumUs;
-        end
-        for i=1:36*4
-            Gradient=Gradient+lamda/64723*P(i)*log(P(i)/Qs(i))*B'*TrainingPositionMatrix(:,i);
-            for j=1:36*4
-                Gradient=Gradient-lamda/64723*P(i)*log(P(i)/Qs(i))*P(j)*B'*TrainingPositionMatrix(:,j);
-            end
-        end
-        Newweight=weight-steplength*Gradient;
-        if norm(Newweight-weight)>0.0000001
-            TragetfuncitonValue=(FeatureVector-AMatrix*weight)'*S*(FeatureVector-AMatrix*weight)+lamda*(sum(P.*log(P))-sum(P.*log(Qs)));
-            disp(['TargetFunctionValue' ':' int2str(QueryNumber)]);
-            fprintf(' %.10f\n ',TragetfuncitonValue);
-            %disp(TragetfuncitonValue);
-            weight=Newweight;
-            LoopCounter=LoopCounter-1;
-        else
-            break;
-        end
-    end
-    EstimatePosition=TrainingWeightMatrix*weight;
+    %% Use matlab funciton do optimizaiton for new solution 3 target func
+    options = optimoptions('fminunc','Display','iter','GradObj','on','DerivativeCheck','off');
+    [Newweight,fval,exitflag]=fminunc(@(x) Solution3TargetFuncVal(x, S, AMatrix, B, lamda, FeatureVector, TrainingFeatureMatrix, TrainingPositionMatrix, QueryFeature),weight,options);
+    %% Gradient descent for new solution 3 target function
+%      LoopCounter=1000;
+%      while LoopCounter>=0
+%          Gradient=-2*A'*S*(FeatureVector-A*weight);
+%          W=double(zeros(36*4,1));
+%          P=double(zeros(36*4,1));
+%          Us=double(zeros(36*4,1));
+%          Qs=double(zeros(36*4,1));
+%          for i=1:36*4
+%              W(i)=exp(-(B*weight-TrainingPositionMatrix(:,i))'*(B*weight-TrainingPositionMatrix(:,i))/2/64723);
+%              Us(i)=exp(-(QueryFeature-TrainingFeatureMatrix(:,i))'*S*(QueryFeature-TrainingFeatureMatrix(:,i))/2/0.5383);
+%          end
+%          SumW=sum(W);
+%          SumUs=sum(Us);
+%          for i=1:36*4
+%              P(i)=W(i)/SumW;
+%              Qs(i)=Us(i)/SumUs;
+%          end
+%          for i=1:36*4
+%              Gradient=Gradient+lamda/64723*P(i)*log(P(i)/Qs(i))*B'*TrainingPositionMatrix(:,i);
+%              for j=1:36*4
+%                  Gradient=Gradient-lamda/64723*P(i)*log(P(i)/Qs(i))*P(j)*B'*TrainingPositionMatrix(:,j);
+%              end
+%          end
+%          Newweight=weight-steplength*Gradient;
+%          if norm(Newweight-weight)>0.0000001
+%              TragetfuncitonValue=(FeatureVector-AMatrix*weight)'*S*(FeatureVector-AMatrix*weight)+lamda*(sum(P.*log(P))-sum(P.*log(Qs)));
+%              disp(['TargetFunctionValue' ':' int2str(QueryNumber)]);
+%              fprintf(' %.10f\n ',TragetfuncitonValue);
+%              %disp(TragetfuncitonValue);
+%              weight=Newweight;
+%              LoopCounter=LoopCounter-1;
+%          else
+%              break;
+%          end
+%      end
+    %% Calculate estimation from weight
+    EstimatePosition=TrainingWeightMatrix*Newweight;
     TotalError=TotalError+norm(double(EstimatePosition)-double(PositionMatrix(:,QueryNumber)));
     %figure(2);
 end
 AvgError=TotalError/36;
 disp('AvgError');
 disp(AvgError);
+Errors(floor((lamda-0.7)*10)+1)=AvgError;
+if lamda==0.7
+    BestLambda=lamda;
+    BestError=AvgError;
+else
+    if AvgError<=BestError
+        BestError=AvgError;
+        BestLambda=lamda;
+    else
+        continue;
+    end
+end
+end
+fprintf('Best lambda[%2.1f] Best error[%8.6f]\n',BestLambda,BestError);

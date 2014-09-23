@@ -83,7 +83,7 @@ end
  figure(3);
  AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.5383,S);
  x.x=S;
- save(['S_10-9','.mat'],'-struct','x');
+ save(['S_10-10','.mat'],'-struct','x');
 %S=load(['S_10-8','.mat']);
 %S=S.x;
 %Normalized relative gaze position
