@@ -67,7 +67,7 @@ BestLambda=0;
 BestError=0;
 Errors=zeros(floor((1.2-0.7)*10)+1,1);
 disp(size(Errors));
-for lamda=0.7:0.1:1.2
+for lamda=0.7:0.1:0.7
 TotalError=0;
 for QueryNumber=1:36
     QueryFeature=TestingFeatureMatrix(:,QueryNumber);
