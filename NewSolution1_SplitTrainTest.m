@@ -107,7 +107,7 @@ AffinityMatrix2=DisplayAffinityMatrix(PositionMatrix,64723);
 figure(3);
 AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.5383,S);
 x.x=S;
-save(['S_10-5_SplitTrainTest','.mat'],'-struct','x');
+save(['S_10-6_SplitTrainTest','.mat'],'-struct','x');
 %S=load(['S_10-8','.mat']);
 %S=S.x;
 %Normalized relative gaze position
