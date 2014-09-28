@@ -4,9 +4,9 @@
 % the above order. All coordinates are saved as [y;x]
 clear;
 clc;
-img_basename='new_data_Sep_26/test_enlarged_ResizedEyes_right_';
+img_basename='new_data_Sep_26/test_enlarged_ResizedEyes_left_';
 img_extention_name='.jpg';
-sample_round=1;
+sample_round=5;
 img_amount=61;
 TotalX=[];
 TotalY=[];
@@ -45,7 +45,7 @@ while ImgCount<=img_amount
     end
 end
 
-SaveFileNamePrefix='Training_Sep26_right_';
+SaveFileNamePrefix='Training_Sep26_left_';
 SaveFileNameSuffix='.mat';
 x=CloserInnerCorner;
 save([SaveFileNamePrefix,'CloserInnerCorner', '__', int2str(sample_round), SaveFileNameSuffix],'x');
