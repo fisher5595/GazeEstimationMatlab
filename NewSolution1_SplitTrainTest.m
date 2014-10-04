@@ -99,15 +99,15 @@ FeatureMatrix=TrainingMatrix;
 % one eye feature, sigma is default in Find... function
 %S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix);
 % two eye feature
-S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix,64723,0.5383);
+S=NewFindMetricPreservationMatrix(FeatureMatrix,PositionMatrix,32328,0.0469);
 figure(1);
-AffinityMatrix1=DisplayAffinityMatrix(FeatureMatrix, 0.5383);
+AffinityMatrix1=DisplayAffinityMatrix(FeatureMatrix, 0.0469);
 figure(2);
-AffinityMatrix2=DisplayAffinityMatrix(PositionMatrix,64723);
+AffinityMatrix2=DisplayAffinityMatrix(PositionMatrix,32328);
 figure(3);
-AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.5383,S);
+AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.0469,S);
 x.x=S;
-save(['S_10-6_SplitTrainTest','.mat'],'-struct','x');
+%save(['S_10-10_SplitTrainTest','.mat'],'-struct','x');
 %S=load(['S_10-8','.mat']);
 %S=S.x;
 %Normalized relative gaze position

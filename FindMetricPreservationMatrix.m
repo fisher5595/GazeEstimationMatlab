@@ -13,7 +13,9 @@ else
     sigma1=Sigma1;
     sigma2=Sigma2;
 end
-S=eye(FeatureDimension);
+%S=eye(FeatureDimension);
+S=load(['S_10-9_SplitTrainTest' '.mat']);
+S=S.x;
 for i=1:NumberOfFeatures
     for j=1:NumberOfFeatures
         w(i,j)=exp(-(TargetFeatureSpace(:,i)-TargetFeatureSpace(:,j))'*(TargetFeatureSpace(:,i)-TargetFeatureSpace(:,j))/2/sigma1);
@@ -91,7 +93,7 @@ while 1
     for i=1:FeatureDimension
         NewNewS=NewNewS+max(0,real(Lampda(i,i)))*U(:,i)*U(:,i)';
     end
-    if sum(sum((NewNewS-S).^2))<=1e-6
+    if sum(sum((NewNewS-S).^2))<=1e-9
         disp(sum(sum((NewNewS-S).^2)));
         break;
     else
