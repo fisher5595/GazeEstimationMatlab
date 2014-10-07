@@ -18,7 +18,7 @@ props.setProperty('mail.smtp.socketFactory.class', ...
                   'javax.net.ssl.SSLSocketFactory');
 props.setProperty('mail.smtp.socketFactory.port','465');
 
-for SubjectNumber=0:6
+for SubjectNumber=0:9
     x=load([SaveDir,num2str(SubjectNumber),'/','TotalFeatureMatrix', '.mat']);
     TotalFeatureMatrix=x.x;
     x=load([SaveDir,num2str(SubjectNumber),'/','TotalGazePositionMatrix', '.mat']);
@@ -61,42 +61,33 @@ for SubjectNumber=0:6
         TmpTrainingPositionMatrix(:,QueryNumber)=[];
         TmpTrainingFeatureMatrix(:,QueryNumber)=[];
         BestError=0;
-        BestEpsilon=0.0001;
+        BestEpsilon=0.001;
 %         StartingWeight=zeros(NumOfFeaturesInTraining,1);
 %         StartingWeight(max(QueryNumber-1,1))=0.5;
 %         StartingWeight(min(QueryNumber+1,NumOfFeaturesInTraining))=0.5;
 %         StartingWeight(QueryNumber)=[];
-        % Estimate start weight using knn solution
-        DistanceMatrix=zeros(NumOfFeaturesInTraining-1,1);
-        for ii = 1:NumOfFeaturesInTraining-1
-            DistanceMatrix(ii)=(QueryFeature-TmpTrainingFeatureMatrix(:,ii))'*(QueryFeature-TmpTrainingFeatureMatrix(:,ii));
-        end
-        [SortedDistanceMatrix,index]=sort(DistanceMatrix);
-        %index(find(index==QueryNumber))=[];
-        AMatrix=zeros(100,NumOfFeaturesInTraining-1);
-        for k=1:NumOfFeaturesInTraining-1
-            AMatrix(:,k)=TmpTrainingFeatureMatrix(:,index(k));
-            TrainingWeightMatrix(:,k)=TmpTrainingPositionMatrix(:,index(k));
-        end
-        CMatrix=(QueryFeature*ones(NumOfFeaturesInTraining-1,1)'-AMatrix)'*(QueryFeature*ones(NumOfFeaturesInTraining-1,1)'-AMatrix);
-        weight=pinv(CMatrix)*ones(NumOfFeaturesInTraining-1,1);
-        weight=weight./sum(weight);
-    %     %Estimation for absolute gaze position
-        StartingWeight=weight;
+        StartingWeight=pinv(TmpTrainingFeatureMatrix)*QueryFeature;
         
         %Try epsilon
-        for epsilon=0.001:0.001:1
+        for epsilon=0.001:0.001:0.1
             if epsilon==0.001
                 weight=l1qc_logbarrier(StartingWeight, TmpTrainingFeatureMatrix, [], QueryFeature, epsilon);
                 BestError=norm(TmpTrainingPositionMatrix*weight-QueryPosition);
             else
                 weight=l1qc_logbarrier(StartingWeight, TmpTrainingFeatureMatrix, [], QueryFeature, epsilon);
                 Error=norm(TmpTrainingPositionMatrix*weight-QueryPosition);
+                fprintf('l1 norm[%5.3f]\n',norm(weight,1));
+                if abs(norm(weight,1)-1)<1e-2
+                    break;
+                end
                 if Error<=BestError
                     BestError=Error;
                     BestEpsilon=epsilon;
                 else
                     %break;
+                end
+                if norm(weight,1)<1
+                    break;
                 end
             end
         end
@@ -112,6 +103,7 @@ for SubjectNumber=0:6
     fprintf('EstimatedEpsilon[%11.8f]\n',EstimatedEpsilon);
     
     %Testing
+    Errors=double(zeros(NumOfFeaturesInTesting,1));
     for QueryNumber=1:NumOfFeaturesInTesting
         QueryFeature=TestingFeatureMatrix(:,QueryNumber);
         %Calculate the estimate gaze position and display it
@@ -138,7 +130,7 @@ for SubjectNumber=0:6
 
         %Calculate estimation from weight
         EstimatePosition=TrainingPositionMatrix*Newweight;
-        Errors=norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber)));
+        Errors(QueryNumber)=norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber)));
         %figure(2);
     end
     

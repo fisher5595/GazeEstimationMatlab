@@ -74,12 +74,12 @@ if (largescale)
   end
 else
   if (norm(A*x0-b) > epsilon)
-%     disp('Starting point infeasible; using x0 = At*inv(AAt)*y.');
+    disp('Starting point infeasible; using x0 = At*inv(AAt)*y.');
     %opts.POSDEF = true; 
     opts.SYM = true;
     [w, hcond] = linsolve(A*A', b, opts);
     if (hcond < 1e-14)
-%       disp('A*At is ill-conditioned: cannot find starting point');
+      disp('A*At is ill-conditioned: cannot find starting point');
       xp = x0;
       return;
     end

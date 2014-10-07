@@ -17,7 +17,7 @@ props.setProperty('mail.smtp.socketFactory.class', ...
                   'javax.net.ssl.SSLSocketFactory');
 props.setProperty('mail.smtp.socketFactory.port','465');
 
-for SubjectNumber=5:7
+for SubjectNumber=0:9
     x=load([SaveDir,num2str(SubjectNumber),'/','TotalFeatureMatrix', '.mat']);
     TotalFeatureMatrix=x.x;
     x=load([SaveDir,num2str(SubjectNumber),'/','TotalGazePositionMatrix', '.mat']);

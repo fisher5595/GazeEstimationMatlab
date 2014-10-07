@@ -64,22 +64,24 @@ for QueryNumber=1:36*4
     TrainingFeatureMatrix(:,QueryNumber)=[];
     BestError=0;
     BestEpsilon=0.001;
-    for epsilon=0.001:0.001:0.1
+    for epsilon=0.001:0.001:1
         if epsilon==0.001
             weight=l1qc_logbarrier(ones(36*4-1,1), TrainingFeatureMatrix, [], QueryFeature, epsilon);
             BestError=norm(TrainingPositionMatrix*weight-QueryPosition);
         else
             weight=l1qc_logbarrier(ones(36*4-1,1), TrainingFeatureMatrix, [], QueryFeature, epsilon);
             Error=norm(TrainingPositionMatrix*weight-QueryPosition);
-            if Error<=BestError
+            fprintf('L1 norm of weight[%4.2f]\n',norm(weight,1));
+            if abs(norm(weight,1)-1)<=1e-2
                 BestError=Error;
                 BestEpsilon=epsilon;
-            else
+                BestWeight=weight;
+                break;
                 %break;
             end
         end
     end
-    fprintf('Query[%4.0f],Epsilon[%6.4f]\n',QueryNumber,BestEpsilon);
+    fprintf('Query[%4.0f],Epsilon[%6.4f],BestError[%8.4f],L1 norm of weight[%4.2f]\n',QueryNumber,BestEpsilon,BestError,norm(BestWeight,1));
     Epsilons(QueryNumber)=BestEpsilon;
     Alphas(QueryNumber)=exp(-Kappa*norm(QueryPosition-CenterPosition));
 end

@@ -1,9 +1,9 @@
-function [ S ] = NewFindMetricPreservationMatrix( InputFeatureSpace, TargetFeatureSpace, Sigma1, Sigma2, StartingS, StoppingCriterion )
+function [ S ] = NewFindMetricPreservationMatrix( InputFeatureSpace, TargetFeatureSpace, Sigma1, Sigma2, StartingS, StoppingCriterion, StepSize )
 %This function finds a transformation between InputFeatureSpace and
 %TargetFeatureSpace, output this transformation as Matrix S as the
 %mahalanobis distance, x^T S x.
 %   The affinity of a space uses simplest one as x^Tx.
-epsilon=0.001;%epsilon for new solution 1
+epsilon=StepSize;%epsilon for new solution 1
 NumberOfFeatures=size(InputFeatureSpace,2);
 FeatureDimension=size(InputFeatureSpace,1);
 if nargin<3

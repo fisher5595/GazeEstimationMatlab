@@ -68,6 +68,7 @@ for QueryNumber=1:36*5
         else
             weight=l1qc_logbarrier(ones(36*5-1,1), TrainingFeatureMatrix, [], QueryFeature, epsilon);
             Error=norm(TrainingPositionMatrix*weight-QueryPosition);
+            fprintf('L1 norm of weight[%4.2f]\n',norm(weight,1));
             if Error<=BestError
                 BestError=Error;
                 BestEpsilon=epsilon;
@@ -76,7 +77,7 @@ for QueryNumber=1:36*5
             end
         end
     end
-    fprintf('Query[%4.0f],Epsilon[%6.3f]\n',QueryNumber,BestEpsilon);
+    fprintf('Query[%4.0f],Epsilon[%6.3f],Error[%6.3f]\n',QueryNumber,BestEpsilon,BestError);
     Epsilons(QueryNumber)=BestEpsilon;
     Alphas(QueryNumber)=exp(-Kappa*norm(QueryPosition-CenterPosition));
 end
@@ -90,6 +91,7 @@ fprintf('EstimatedEpsilon[%11.8f]\n',EstimatedEpsilon);
 %EstimatedEpsilon=0.0182;
 %% Do testing
 TotalError=0;
+Errors=double(zeros(25*5,1));
 for QueryNumber=1:25*5
     QueryFeature=TestingFeatureMatrix(:,QueryNumber);
     TrainingFeatureMatrix=FeatureMatrix;
@@ -101,6 +103,7 @@ for QueryNumber=1:25*5
 
     %% Calculate estimation from weight
     EstimatePosition=TrainingPositionMatrix*Newweight;
+    Errors(QueryNumber)=norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber)));
     TotalError=TotalError+norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber)));
     %figure(2);
 end

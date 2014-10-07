@@ -88,7 +88,7 @@ while (~done)
     Adx = A(dx);
   else
     H11p = diag(sigx) - (1/fe)*AtA + (1/fe)^2*atr*atr';
-    opts.POSDEF = true; 
+    %opts.POSDEF = true; 
     opts.SYM = true;
     [dx,hcond] = linsolve(H11p, w1p, opts);
     if (hcond < 1e-14)
