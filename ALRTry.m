@@ -53,6 +53,7 @@ for RoundNumber=5
 end
 
 TotalError=0;
+Errors=zeros(36,1);
 for QueryNumber=1:36
     QueryFeature=TestingFeatureMatrix(:,QueryNumber);
     TrainingFeatureMatrix=FeatureMatrix;
@@ -83,10 +84,11 @@ for QueryNumber=1:36
     for k=1:k_knn
         StartPoint(index(k))=weight(k);
     end
-    Newweight=l1qc_logbarrier(ones(36*4,1), TrainingFeatureMatrix, [], QueryFeature, 0.047);
+    Newweight=l1qc_logbarrier(ones(36*4,1), TrainingFeatureMatrix, [], QueryFeature,0.047);
 
     %% Calculate estimation from weight
     EstimatePosition=TrainingPositionMatrix*Newweight;
+    Errors(QueryNumber)=norm(double(EstimatePosition)-double(PositionMatrix(:,QueryNumber)));
     TotalError=TotalError+norm(double(EstimatePosition)-double(PositionMatrix(:,QueryNumber)));
     %figure(2);
 end

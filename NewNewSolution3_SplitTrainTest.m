@@ -57,14 +57,16 @@ FeatureMatrix=TrainingMatrix;
 %x.x=S;
 %save(['s_10-9' '.mat'],'-struct','x');
 %Load S matrix from previous result
-S=load(['S_10-9_SplitTrainTest' '.mat']);
+S=load(['S_10-10_SplitTrainTest' '.mat']);
 S=S.x;
 BestLambda=0;
 BestError=0;
-Errors=zeros(floor((0.035-0.020)/0.001)+1,1);
+BestErrors=zeros(25*5,1);
+Errors=zeros(floor((0.050-0.035)/0.001)+1,1);
 disp(size(Errors));
-for lamda=0.020:0.001:0.035
+for lamda=0.036:0.001:0.036
     TotalError=0;
+    OneLambdaErrors=zeros(25*5,1);
     for QueryNumber=1:25*5
         QueryFeature=TestingFeatureMatrix(:,QueryNumber);
         TrainingFeatureMatrix=FeatureMatrix;
@@ -133,22 +135,27 @@ for lamda=0.020:0.001:0.035
         %% Calculate estimation from weight
         EstimatePosition=TrainingWeightMatrix*Newweight;
         TotalError=TotalError+norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber)));
+        OneLambdaErrors(QueryNumber)=norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber)));
         %figure(2);
     end
     AvgError=TotalError/25/5;
     disp('AvgError');
     disp(AvgError);
-    Errors(floor((lamda-0.020)/0.001)+1)=AvgError;
-    if lamda==0.020
+    Errors(floor((lamda-0.035)/0.001)+1)=AvgError;
+    if lamda==0.036
         BestLambda=lamda;
         BestError=AvgError;
+        BestErrors=OneLambdaErrors;
     else
         if AvgError<=BestError
             BestError=AvgError;
             BestLambda=lamda;
+            BestErrors=OneLambdaErrors;
         else
             continue;
         end
     end
 end
 fprintf('Best lambda[%4.3f] Best error[%8.6f]\n',BestLambda,BestError);
+x.x=BestErrors;
+save(['Errors_SplitTrainTest_Sol3_','.mat'],'-struct','x');

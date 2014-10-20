@@ -7,7 +7,7 @@ SubjectStr=['s' sprintf('%02d',SubjectNumber)];
 GazePositionMatrix=csvread([OutputFilePath,'/','gazedata.csv']);
 GazePositionMatrix(:,1)=[];
 CamraNumber=5;
-Resize=[3,5];
+Resize=[4,8];
 FeatureMatrix=[];
 
 for GazeNumber=0:159

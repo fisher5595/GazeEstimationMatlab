@@ -6,7 +6,7 @@ x=load([SaveDir,num2str(SubjectNumber),'/','TotalFeatureMatrix', '.mat']);
 TotalFeatureMatrix=x.x;
 x=load([SaveDir,num2str(SubjectNumber),'/','TotalGazePositionMatrix', '.mat']);
 TotalGazePositionMatrix=x.x;
-StoppingCriterion=1e-8;
+StoppingCriterion=1e-5;
 FeatureAmount=size(TotalFeatureMatrix,2);
 NumOfDifferentX=size(find(TotalGazePositionMatrix(1,:)==TotalGazePositionMatrix(1,1)),2);
 NumOfDifferentY=FeatureAmount/NumOfDifferentX;
@@ -15,35 +15,18 @@ TestingFeatureMatrix=[];
 TrainingPositionMatrix=[];
 TestingPositionMatrix=[];
 
-for y=1:NumOfDifferentY-1
+for y=1:NumOfDifferentY
     for x=1:NumOfDifferentX-1
-        if (mod(x+y,2)==0)
-            Img=TotalFeatureMatrix(:,(y-1)*NumOfDifferentX+x);
-            LeftImg=Img(1:50,1);
-            RightImg=Img(51:100,1);
-            LeftNewImg=reshape(LeftImg,10,5);
-            RightNewImg=reshape(RightImg,10,5);
-            LeftImg=imresize(LeftNewImg',[3,5]);
-            RightImg=imresize(RightNewImg',[3,5]);
-            LeftImg=LeftImg';
-            RightImg=RightImg';
-            TrainingFeatureMatrix=[TrainingFeatureMatrix [LeftImg(:)./norm(LeftImg(:));RightImg(:)./norm(RightImg(:))]];
+        if mod(x+y,2)==0
+            TrainingFeatureMatrix=[TrainingFeatureMatrix TotalFeatureMatrix(:,(y-1)*NumOfDifferentX+x)];
             TrainingPositionMatrix=[TrainingPositionMatrix TotalGazePositionMatrix(:,(y-1)*NumOfDifferentX+x)];
         else
-            Img=TotalFeatureMatrix(:,(y-1)*NumOfDifferentX+x);
-            LeftImg=Img(1:50,1);
-            RightImg=Img(51:100,1);
-            LeftNewImg=reshape(LeftImg,10,5);
-            RightNewImg=reshape(RightImg,10,5);
-            LeftImg=imresize(LeftNewImg',[3,5]);
-            RightImg=imresize(RightNewImg',[3,5]);
-            LeftImg=LeftImg';
-            RightImg=RightImg';
-            TestingFeatureMatrix=[TestingFeatureMatrix [LeftImg(:)./norm(LeftImg(:));RightImg(:)./norm(RightImg(:))]];
+            TestingFeatureMatrix=[TestingFeatureMatrix TotalFeatureMatrix(:,(y-1)*NumOfDifferentX+x)];
             TestingPositionMatrix=[TestingPositionMatrix TotalGazePositionMatrix(:,(y-1)*NumOfDifferentX+x)];
         end
     end
 end
+
 FeatureDimension=size(TrainingFeatureMatrix,1);
 % Estimate the parameters of sigma1 and sigma2.
 NumOfFeaturesInTraining=size(TrainingFeatureMatrix,2);
@@ -70,12 +53,12 @@ Sigma1=std(Tmp(:));
 StartingS=eye(FeatureDimension);
 %StartingS=S;
 % Extract feature and gaze position matrix, and save them
-S=NewFindMetricPreservationMatrix(TrainingFeatureMatrix,TrainingPositionMatrix,Sigma1,Sigma2,StartingS,StoppingCriterion,0.001);
+%S=NewFindMetricPreservationMatrix(TrainingFeatureMatrix,TrainingPositionMatrix,Sigma1,Sigma2,StartingS,StoppingCriterion,0.01);
 %S=load([SaveDir,num2str(SubjectNumber),'/','S-',sprintf('%g',StoppingCriterion),'.mat']);
 %S=load('Tmp_S-6.mat');
 %S=S.x;
 
-%S=eye(FeatureDimension);
+S=eye(FeatureDimension);
 
 %S=eye(size(FeatureMatrix,1));
 Errors=double(zeros(NumOfFeaturesInTesting,1));

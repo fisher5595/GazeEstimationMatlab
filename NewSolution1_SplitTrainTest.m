@@ -99,14 +99,16 @@ FeatureMatrix=TrainingMatrix;
 % one eye feature, sigma is default in Find... function
 %S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix);
 % two eye feature
-S=NewFindMetricPreservationMatrix(FeatureMatrix,PositionMatrix,32328,0.0469);
-figure(1);
-AffinityMatrix1=DisplayAffinityMatrix(FeatureMatrix, 0.0469);
-figure(2);
-AffinityMatrix2=DisplayAffinityMatrix(PositionMatrix,32328);
-figure(3);
-AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.0469,S);
-x.x=S;
+%S=NewFindMetricPreservationMatrix(FeatureMatrix,PositionMatrix,32328,0.0469);
+S=load(['S_10-10_SplitTrainTest','.mat']);
+S=S.x;
+% figure(1);
+% AffinityMatrix1=DisplayAffinityMatrix(TestingFeatureMatrix, 0.0469);
+% figure(2);
+% AffinityMatrix2=DisplayAffinityMatrix(TestingPositionMatrix,32328);
+% figure(3);
+% AffinityMatrix3=DisplayAffinityMatrix(TestingFeatureMatrix,0.0469,S);
+% x.x=S;
 %save(['S_10-10_SplitTrainTest','.mat'],'-struct','x');
 %S=load(['S_10-8','.mat']);
 %S=S.x;
@@ -124,6 +126,7 @@ x.x=S;
 
 %S=eye(size(FeatureMatrix,1));
 TotalError=0;
+Errors=zeros(25*5,1);
 for RoundNumber=1:5
     for QueryNumber=1:25
         QueryFeature=TestingFeatureMatrix(:,QueryNumber+(RoundNumber-1)*25);
@@ -160,6 +163,7 @@ for RoundNumber=1:5
     %     %Estimation for absolute gaze position
          EstimatePosition=TrainingWeightMatrix*weight;
          TotalError=TotalError+norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber+(RoundNumber-1)*25)));
+         Errors(QueryNumber+(RoundNumber-1)*25)=norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber+(RoundNumber-1)*25)));
     %    EstimateRelativePosition=TrainingWeightMatrix*weight;
     %    Result=fsolve(@(x) RelativePositonToAbsolute(x,EstimateRelativePosition),[1,1,100],optimset('Display','off','TolFun',1e-16));
     %    EstimatePosition(:,1)=Result(1:2);
@@ -170,3 +174,5 @@ end
 disp('AvgError');
 AvgError=TotalError/25/5;
 disp(AvgError);
+x.x=Errors;
+save(['Errors_SplitTrainTest_Sol1_','.mat'],'-struct','x');

@@ -1,0 +1,11 @@
+clear;
+Distance=600;
+StoppingCriterion=1e-6;
+StepSize=0.01;
+MeanAndStds=zeros(2,1);
+Errors=load(['Errors_SplitTrainTest_Sol3_', '.mat']);
+Errors=Errors.x;
+DegreeErrors=atand(Errors.*0.248/Distance);
+NumOfQuery=size(Errors,1);
+MeanAndStds(1)=sum(DegreeErrors)/NumOfQuery;
+MeanAndStds(2)=std(DegreeErrors);

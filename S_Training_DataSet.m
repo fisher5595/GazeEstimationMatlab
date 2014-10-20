@@ -7,7 +7,7 @@ clear;
 k_knn=8;
 SaveDir='./DataSet/';
 InputFileDir='/media/peiyu/OS/Users/PeiYu/Downloads/s00-09';
-StartingCriterion=1e-7;
+StartingCriterion=1e-4;
 EndingCrierion=1e-10;
 StepSize=0.01;
 
@@ -33,9 +33,9 @@ for SubjectNumber=0:9
     % Extract feature and gaze position matrix, and save them
     [ TotalFeatureMatrix, TotalGazePositionMatrix] = ExtractMatricesFromSatoDataset( InputFileDir, [SaveDir,num2str(SubjectNumber)], SubjectNumber);
     x.x=TotalFeatureMatrix;
-    save([SaveDir,num2str(SubjectNumber),'/','TotalFeatureMatrix', '.mat'],'-struct','x');
+    save([SaveDir,num2str(SubjectNumber),'/','TotalFeatureMatrix48', '.mat'],'-struct','x');
     x.x=TotalGazePositionMatrix;
-    save([SaveDir,num2str(SubjectNumber),'/','TotalGazePositionMatrix', '.mat'],'-struct','x');
+    save([SaveDir,num2str(SubjectNumber),'/','TotalGazePositionMatrix48', '.mat'],'-struct','x');
     %Split feature matrix into training feature matrix and testing feature
     %matrix, also add the position matrices
     FeatureDimension=size(TotalFeatureMatrix,1);
@@ -86,15 +86,15 @@ for SubjectNumber=0:9
         S=NewFindMetricPreservationMatrix(TrainingFeatureMatrix,TrainingPositionMatrix,Sigma1,Sigma2,StartingS,StoppingCriterion,StepSize);
         h=figure(1);
         AffinityMatrix1=DisplayAffinityMatrix(TrainingFeatureMatrix, Sigma2);
-        saveas(h,[SaveDir,num2str(SubjectNumber),'/S-',sprintf('%g',StoppingCriterion),'_Epsilon-',sprintf('%g',StepSize),'_figure1.jpg']);
+        saveas(h,[SaveDir,num2str(SubjectNumber),'/S-48-',sprintf('%g',StoppingCriterion),'_Epsilon-',sprintf('%g',StepSize),'_figure1.jpg']);
         h=figure(2);
         AffinityMatrix2=DisplayAffinityMatrix(TrainingPositionMatrix,Sigma1);
-        saveas(h,[SaveDir,num2str(SubjectNumber),'/S-',sprintf('%g',StoppingCriterion),'_Epsilon-',sprintf('%g',StepSize),'_figure2.jpg']);
+        saveas(h,[SaveDir,num2str(SubjectNumber),'/S-48-',sprintf('%g',StoppingCriterion),'_Epsilon-',sprintf('%g',StepSize),'_figure2.jpg']);
         h=figure(3);
         AffinityMatrix3=DisplayAffinityMatrix(TrainingFeatureMatrix,Sigma2,S);
-        saveas(h,[SaveDir,num2str(SubjectNumber),'/S-',sprintf('%g',StoppingCriterion),'_Epsilon-',sprintf('%g',StepSize),'_figure3.jpg']);
+        saveas(h,[SaveDir,num2str(SubjectNumber),'/S-48-',sprintf('%g',StoppingCriterion),'_Epsilon-',sprintf('%g',StepSize),'_figure3.jpg']);
         x.x=S;
-        save([SaveDir,num2str(SubjectNumber),'/','S-',sprintf('%g',StoppingCriterion),'_Epsilon-',sprintf('%g',StepSize),'.mat'],'-struct','x');
+        save([SaveDir,num2str(SubjectNumber),'/','S-48-',sprintf('%g',StoppingCriterion),'_Epsilon-',sprintf('%g',StepSize),'.mat'],'-struct','x');
         %S=load(['S_10-8','.mat']);
         %S=S.x;
         %Normalized relative gaze position
@@ -151,14 +151,14 @@ for SubjectNumber=0:9
         AvgError=sum(Errors)/NumOfFeaturesInTesting;
         disp(AvgError);
         x.x=Errors;
-        save([SaveDir,num2str(SubjectNumber),'/','Errors_S-',sprintf('%g',StoppingCriterion),'_Epsilon-',sprintf('%g',StepSize), '.mat'],'-struct','x');
+        save([SaveDir,num2str(SubjectNumber),'/','Errors_S-48-',sprintf('%g',StoppingCriterion),'_Epsilon-',sprintf('%g',StepSize), '.mat'],'-struct','x');
         StartingS=S;
         % Send notification via email
-        sendmail(myaddress, sprintf('Subject[%02d], Stopping[%e], Epsilon[%g]',SubjectNumber, StoppingCriterion,StepSize), [sprintf('AverageError[%8.5f]',AvgError) 10 ...
+        sendmail(myaddress, sprintf('Subject[%02d]48, Stopping[%e], Epsilon[%g]',SubjectNumber, StoppingCriterion,StepSize), [sprintf('AverageError[%8.5f]',AvgError) 10 ...
                  sprintf('Sigma1[%10.2f]',Sigma1) 10 sprintf('Sigma2[%8.7f]',Sigma2)],...
-                 {[SaveDir,num2str(SubjectNumber),'/S-',sprintf('%g',StoppingCriterion),'_Epsilon-',sprintf('%g',StepSize),'_figure1.jpg'],...
-                 [SaveDir,num2str(SubjectNumber),'/S-',sprintf('%g',StoppingCriterion),'_Epsilon-',sprintf('%g',StepSize),'_figure2.jpg'],...
-                 [SaveDir,num2str(SubjectNumber),'/S-',sprintf('%g',StoppingCriterion),'_Epsilon-',sprintf('%g',StepSize),'_figure3.jpg']});
+                 {[SaveDir,num2str(SubjectNumber),'/S-48-',sprintf('%g',StoppingCriterion),'_Epsilon-',sprintf('%g',StepSize),'_figure1.jpg'],...
+                 [SaveDir,num2str(SubjectNumber),'/S-48-',sprintf('%g',StoppingCriterion),'_Epsilon-',sprintf('%g',StepSize),'_figure2.jpg'],...
+                 [SaveDir,num2str(SubjectNumber),'/S-48-',sprintf('%g',StoppingCriterion),'_Epsilon-',sprintf('%g',StepSize),'_figure3.jpg']});
         StoppingCriterion=StoppingCriterion/10;
     end
 end

@@ -64,7 +64,7 @@ for QueryNumber=1:36*4
     TrainingFeatureMatrix(:,QueryNumber)=[];
     BestError=0;
     BestEpsilon=0.001;
-    for epsilon=0.001:0.001:1
+    for epsilon=0.001:0.001:0.1
         if epsilon==0.001
             weight=l1qc_logbarrier(ones(36*4-1,1), TrainingFeatureMatrix, [], QueryFeature, epsilon);
             BestError=norm(TrainingPositionMatrix*weight-QueryPosition);
@@ -72,13 +72,18 @@ for QueryNumber=1:36*4
             weight=l1qc_logbarrier(ones(36*4-1,1), TrainingFeatureMatrix, [], QueryFeature, epsilon);
             Error=norm(TrainingPositionMatrix*weight-QueryPosition);
             fprintf('L1 norm of weight[%4.2f]\n',norm(weight,1));
-            if abs(norm(weight,1)-1)<=1e-2
+            if Error<=BestError
                 BestError=Error;
                 BestEpsilon=epsilon;
                 BestWeight=weight;
-                break;
-                %break;
             end
+%             if norm(weight,1)<1
+%                 BestError=Error;
+%                 BestEpsilon=epsilon;
+%                 BestWeight=weight;
+%                 break;
+%                 %break;
+%             end
         end
     end
     fprintf('Query[%4.0f],Epsilon[%6.4f],BestError[%8.4f],L1 norm of weight[%4.2f]\n',QueryNumber,BestEpsilon,BestError,norm(BestWeight,1));
@@ -94,6 +99,8 @@ fprintf('EstimatedEpsilon[%11.8f]\n',EstimatedEpsilon);
 
 %% Do testing
 TotalError=0;
+Errors=zeros(36,1);
+%EstimatedEpsilon=0.111;
 for QueryNumber=1:36
     QueryFeature=TestingFeatureMatrix(:,QueryNumber);
     TrainingFeatureMatrix=FeatureMatrix;
@@ -106,8 +113,11 @@ for QueryNumber=1:36
     %% Calculate estimation from weight
     EstimatePosition=TrainingPositionMatrix*Newweight;
     TotalError=TotalError+norm(double(EstimatePosition)-double(PositionMatrix(:,QueryNumber)));
+    Errors(QueryNumber)=norm(double(EstimatePosition)-double(PositionMatrix(:,QueryNumber)));
     %figure(2);
 end
+x.x=Errors;
+save(['Errors_ALR','.mat'],'-struct','x');
 AvgError=TotalError/36;
 disp('AvgError');
 disp(AvgError);

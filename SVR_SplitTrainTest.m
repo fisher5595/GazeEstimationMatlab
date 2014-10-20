@@ -57,9 +57,14 @@ PredictedGaze=[PredictedY';PredictedX'];
 % Calculate the average error
 EstimationGroundTruthGapMatrix=PredictedGaze-TestingPositionMatrix;
 NumOfQuery=size(EstimationGroundTruthGapMatrix,2);
+Errors=zeros(NumOfQuery,1);
 TotalError=0;
 for i=1:NumOfQuery
     TotalError=TotalError+norm(EstimationGroundTruthGapMatrix(:,i));
+    Errors(i)=norm(EstimationGroundTruthGapMatrix(:,i));
 end
+
+x.x=Errors;
+save(['Errors_SplitTrainTest_SVR_','.mat'],'-struct','x');
 AvgError=TotalError/NumOfQuery;
 fprintf('EstimatedC[%d] AvgError[%8.4f]\n', SVR_C, AvgError);

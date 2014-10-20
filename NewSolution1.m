@@ -2,7 +2,7 @@
 
 %Load features
 clear;
-k_knn=20;
+k_knn=30;
 featureName='enlarged_RegisteredFeature_Aug27_left_';
 rightfeatureName='enlarged_RegisteredFeature_Aug27_right_';
 
@@ -75,17 +75,19 @@ end
 % one eye feature, sigma is default in Find... function
 %S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix);
 % two eye feature
- S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix,64723,0.5383);
- figure(1);
- AffinityMatrix1=DisplayAffinityMatrix(FeatureMatrix, 0.5383);
- figure(2);
- AffinityMatrix2=DisplayAffinityMatrix(PositionMatrix,64723);
- figure(3);
- AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.5383,S);
- x.x=S;
- save(['S_10-10','.mat'],'-struct','x');
-%S=load(['S_10-8','.mat']);
-%S=S.x;
+%  S=FindMetricPreservationMatrix(FeatureMatrix,PositionMatrix,64723,0.5383);
+% S=load(['S_10-10','.mat']);
+% S=S.x;
+% figure(1);
+% AffinityMatrix1=DisplayAffinityMatrix(TestingFeatureMatrix, 0.5383);
+% figure(2);
+% AffinityMatrix2=DisplayAffinityMatrix(TestingPositionMatrix,64723);
+% figure(3);
+% AffinityMatrix3=DisplayAffinityMatrix(TestingFeatureMatrix,0.5383,S);
+%  x.x=S;
+%  save(['S_10-10','.mat'],'-struct','x');
+S=load(['S_10-10','.mat']);
+S=S.x;
 %Normalized relative gaze position
 %Absolute gaze sigma
 %S=FindMetricPreservationMatrix(FeatureMatrix,RelativePositionMatrix,0.0686,0.5383);
@@ -100,6 +102,7 @@ end
 
 %S=eye(size(FeatureMatrix,1));
 TotalError=0;
+Errors=zeros(36,1);
 for QueryNumber=1:36
     QueryFeature=TestingFeatureMatrix(:,QueryNumber);
     TrainingFeatureMatrix=FeatureMatrix;
@@ -134,6 +137,7 @@ for QueryNumber=1:36
     weight=weight./sum(weight);
 %     %Estimation for absolute gaze position
      EstimatePosition=TrainingWeightMatrix*weight;
+     Errors(QueryNumber)=norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber)));
      TotalError=TotalError+norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber)));
 %    EstimateRelativePosition=TrainingWeightMatrix*weight;
 %    Result=fsolve(@(x) RelativePositonToAbsolute(x,EstimateRelativePosition),[1,1,100],optimset('Display','off','TolFun',1e-16));
@@ -141,7 +145,8 @@ for QueryNumber=1:36
 %    TotalError=TotalError+norm(double(EstimatePosition)-double(PositionMatrix(:,QueryNumber)));
     %figure(2);
 end
-
+x.x=Errors;
+save(['Errors_Sol1','.mat'],'-struct','x');
 disp('AvgError');
 AvgError=TotalError/36;
 disp(AvgError);

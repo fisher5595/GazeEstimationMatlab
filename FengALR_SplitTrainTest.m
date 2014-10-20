@@ -110,3 +110,5 @@ end
 AvgError=TotalError/25/5;
 disp('AvgError');
 disp(AvgError);
+x.x=Errors;
+save(['Errors_SplitTrainTest_ALR_','.mat'],'-struct','x');
