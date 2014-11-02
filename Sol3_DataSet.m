@@ -6,8 +6,8 @@ clear;
 k_knn=8;
 SaveDir='./DataSet/';
 InputFileDir='/media/peiyu/OS/Users/PeiYu/Downloads/s00-09';
-SubjectNumber=2;
-StoppingCriterion=1e-10;
+SubjectNumber=9;
+StoppingCriterion=1e-9;
 StepSize=0.01;
 BestLambda=10;
 InitialScale=1;
@@ -32,9 +32,9 @@ props.setProperty('mail.smtp.socketFactory.port','465');
 %sendmail(myaddress, 'Start of all work', 'Watch out');
 
 %Load data and split training and testing data.
-x=load([SaveDir,num2str(SubjectNumber),'/','TotalFeatureMatrix', '.mat']);
+x=load([SaveDir,num2str(SubjectNumber),'/','TotalFeatureMatrix48', '.mat']);
 TotalFeatureMatrix=x.x;
-x=load([SaveDir,num2str(SubjectNumber),'/','TotalGazePositionMatrix', '.mat']);
+x=load([SaveDir,num2str(SubjectNumber),'/','TotalGazePositionMatrix48', '.mat']);
 TotalGazePositionMatrix=x.x;
 FeatureDimension=size(TotalFeatureMatrix,1);
 FeatureAmount=size(TotalFeatureMatrix,2);
@@ -73,7 +73,7 @@ for i=1:NumOfFeaturesInTraining
     end
 end
 Sigma1=std(Tmp(:));
-x=load([SaveDir,num2str(SubjectNumber),'/','S-',sprintf('%g',StoppingCriterion),'_Epsilon-',sprintf('%g',StepSize),'.mat']);
+x=load([SaveDir,num2str(SubjectNumber),'/','S-48-',sprintf('%g',StoppingCriterion),'_Epsilon-',sprintf('%g',StepSize),'.mat']);
 S=x.x;
 
 %% Estimate the best lambda
@@ -112,10 +112,10 @@ for QueryNumber=1:NumOfFeaturesInTesting
     weight=weight./sum(weight);
 
     %% Use matlab funciton do optimizaiton for new solution 3 target func
-    %options = optimoptions('fminunc','Display','off','GradObj','on','DerivativeCheck','off');
-    %[Newweight,fval,exitflag]=fminunc(@(x) Solution3TargetFuncVal_DataSet(x, S, AMatrix, B, BestLambda, FeatureVector, TrainingFeatureMatrix, TrainingPositionMatrix, QueryFeature,Sigma1,Sigma2),weight,options);
-    options = optimoptions('fmincon','Display','off','GradObj','on','DerivativeCheck','off');
-    [Newweight,fval,exitflag]=fmincon(@(x) Solution3TargetFuncVal_DataSet(x, S, AMatrix, B, BestLambda, FeatureVector, TrainingFeatureMatrix, TrainingPositionMatrix, QueryFeature,Sigma1,Sigma2),weight,[],[],ones(1,k_knn),1,[],[],[],options);
+    options = optimoptions('fminunc','Display','off','GradObj','on','DerivativeCheck','off');
+    [Newweight,fval,exitflag]=fminunc(@(x) Solution3TargetFuncVal_DataSet(x, S, AMatrix, B, BestLambda, FeatureVector, TrainingFeatureMatrix, TrainingPositionMatrix, QueryFeature,Sigma1,Sigma2),weight,options);
+    %options = optimoptions('fmincon','Display','off','GradObj','on','DerivativeCheck','off');
+    %[Newweight,fval,exitflag]=fmincon(@(x) Solution3TargetFuncVal_DataSet(x, S, AMatrix, B, BestLambda, FeatureVector, TrainingFeatureMatrix, TrainingPositionMatrix, QueryFeature,Sigma1,Sigma2),weight,[],[],ones(1,k_knn),1,[],[],[],options);
     %% Calculate estimation from weight
     EstimatePosition=TrainingWeightMatrix*Newweight;
     Errors(QueryNumber)=norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber)));
@@ -160,10 +160,10 @@ while Scale>=EndingScale
             weight=weight./sum(weight);
 
             %% Use matlab funciton do optimizaiton for new solution 3 target func
-            %options = optimoptions('fminunc','Display','off','GradObj','on','DerivativeCheck','off');
-            %[Newweight,fval,exitflag]=fminunc(@(x) Solution3TargetFuncVal_DataSet(x, S, AMatrix, B, lamda, FeatureVector, TrainingFeatureMatrix, TrainingPositionMatrix, QueryFeature,Sigma1,Sigma2),weight,options);
-            options = optimoptions('fmincon','Display','off','GradObj','on','DerivativeCheck','off');
-            [Newweight,fval,exitflag]=fmincon(@(x) Solution3TargetFuncVal_DataSet(x, S, AMatrix, B, lamda, FeatureVector, TrainingFeatureMatrix, TrainingPositionMatrix, QueryFeature,Sigma1,Sigma2),weight,[],[],ones(1,k_knn),1,[],[],[],options);
+            options = optimoptions('fminunc','Display','off','GradObj','on','DerivativeCheck','off');
+            [Newweight,fval,exitflag]=fminunc(@(x) Solution3TargetFuncVal_DataSet(x, S, AMatrix, B, lamda, FeatureVector, TrainingFeatureMatrix, TrainingPositionMatrix, QueryFeature,Sigma1,Sigma2),weight,options);
+            %options = optimoptions('fmincon','Display','off','GradObj','on','DerivativeCheck','off');
+            %[Newweight,fval,exitflag]=fmincon(@(x) Solution3TargetFuncVal_DataSet(x, S, AMatrix, B, lamda, FeatureVector, TrainingFeatureMatrix, TrainingPositionMatrix, QueryFeature,Sigma1,Sigma2),weight,[],[],ones(1,k_knn),1,[],[],[],options);
             %% Calculate estimation from weight
             EstimatePosition=TrainingWeightMatrix*Newweight;
             Errors(QueryNumber)=norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber)));
@@ -184,7 +184,7 @@ while Scale>=EndingScale
 end
 fprintf('Best lambda[%6.3f] Best error[%8.6f]\n',BestLambda,BestAvgError);
 x.x=AvgErrorsAndLambdas;
-save([SaveDir,num2str(SubjectNumber),'/','ErrorsAndLambdas_Sol3_SumOne_',sprintf('S-%g',StoppingCriterion),'.mat'],'-struct','x');
+save([SaveDir,num2str(SubjectNumber),'/','ErrorsAndLambdas-48_Sol3_',sprintf('S-%g',StoppingCriterion),'.mat'],'-struct','x');
 x.x=BestErrors;
-save([SaveDir,num2str(SubjectNumber),'/','Errors_Best_Sol3_SumOne_',sprintf('S-%g',StoppingCriterion),'.mat'],'-struct','x');
-sendmail(myaddress, sprintf('Sol3 SumOne Subject[%02d],StoppingCriterion[%g],BestLambda[%6.3f] AvgError[%8.6f]',SubjectNumber,StoppingCriterion,BestLambda,BestAvgError));
+save([SaveDir,num2str(SubjectNumber),'/','Errors-48_Best_Sol3_',sprintf('S-%g',StoppingCriterion),'.mat'],'-struct','x');
+sendmail(myaddress, sprintf('Sol3 -48 Subject[%02d],StoppingCriterion[%g],BestLambda[%6.3f] AvgError[%8.6f]',SubjectNumber,StoppingCriterion,BestLambda,BestAvgError));

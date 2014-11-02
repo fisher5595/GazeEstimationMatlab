@@ -19,9 +19,9 @@ props.setProperty('mail.smtp.socketFactory.class', ...
 props.setProperty('mail.smtp.socketFactory.port','465');
 
 for SubjectNumber=0:9
-    x=load([SaveDir,num2str(SubjectNumber),'/','TotalFeatureMatrix', '.mat']);
+    x=load([SaveDir,num2str(SubjectNumber),'/','TotalFeatureMatrix48', '.mat']);
     TotalFeatureMatrix=x.x;
-    x=load([SaveDir,num2str(SubjectNumber),'/','TotalGazePositionMatrix', '.mat']);
+    x=load([SaveDir,num2str(SubjectNumber),'/','TotalGazePositionMatrix48', '.mat']);
     TotalGazePositionMatrix=x.x;
     FeatureDimension=size(TotalFeatureMatrix,1);
     FeatureAmount=size(TotalFeatureMatrix,2);
@@ -136,8 +136,8 @@ for SubjectNumber=0:9
     
     AvgError=sum(Errors)/NumOfFeaturesInTesting;
     x.x=Errors;
-    save([SaveDir,num2str(SubjectNumber),'/','Errors_ALR','.mat'],'-struct','x');
+    save([SaveDir,num2str(SubjectNumber),'/','Errors-48_ALR','.mat'],'-struct','x');
     fprintf('EstimatedEpsilon[%11.8f] AvgError[%8.4f]\n', EstimatedEpsilon, AvgError);
-    sendmail(myaddress, sprintf('ALR Subject[%02d]',SubjectNumber), [sprintf('AverageError[%8.5f]',AvgError) 10 ...
+    sendmail(myaddress, sprintf('ALR -48 Subject[%02d]',SubjectNumber), [sprintf('AverageError[%8.5f]',AvgError) 10 ...
                  sprintf('EstimatedEpsilon[%11.8f]',EstimatedEpsilon)]);
 end

@@ -22,7 +22,7 @@ function varargout = Gui(varargin)
 
 % Edit the above text to modify the response to help Gui
 
-% Last Modified by GUIDE v2.5 23-Oct-2014 11:10:51
+% Last Modified by GUIDE v2.5 24-Oct-2014 11:26:56
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -44,6 +44,7 @@ end
 % End initialization code - DO NOT EDIT
 
 
+
 % --- Executes just before Gui is made visible.
 function Gui_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
@@ -51,7 +52,11 @@ function Gui_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to Gui (see VARARGIN)
-
+axes(handles.axes2)
+handles.cam=videoinput('linuxvideo');
+videoFrame=getsnapshot(handles.cam);
+frameSize=size(videoFrame);
+handles.videoPlayer=vision.VideoPlayer('Position',[0 0 frameSize(2) frameSize(1)]);
 % Choose default command line output for Gui
 handles.output = hObject;
 
@@ -71,3 +76,12 @@ function varargout = Gui_OutputFcn(hObject, eventdata, handles)
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
+
+
+% --- Executes during object creation, after setting all properties.
+function axes1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to axes1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: place code in OpeningFcn to populate axes1

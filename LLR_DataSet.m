@@ -8,9 +8,9 @@ EndingCrierion=1e-10;
 StepSize=0.01;
 
 for SubjectNumber=0:9
-    x=load([SaveDir,num2str(SubjectNumber),'/','TotalFeatureMatrix', '.mat']);
+    x=load([SaveDir,num2str(SubjectNumber),'/','TotalFeatureMatrix48', '.mat']);
     TotalFeatureMatrix=x.x;
-    x=load([SaveDir,num2str(SubjectNumber),'/','TotalGazePositionMatrix', '.mat']);
+    x=load([SaveDir,num2str(SubjectNumber),'/','TotalGazePositionMatrix48', '.mat']);
     TotalGazePositionMatrix=x.x;
     FeatureDimension=size(TotalFeatureMatrix,1);
     FeatureAmount=size(TotalFeatureMatrix,2);
@@ -77,5 +77,5 @@ for SubjectNumber=0:9
     AvgError=sum(Errors)/NumOfFeaturesInTesting;
     disp(AvgError);
     x.x=Errors;
-    save([SaveDir,num2str(SubjectNumber),'/','Errors_LLR', '.mat'],'-struct','x');
+    save([SaveDir,num2str(SubjectNumber),'/','Errors-48_LLR', '.mat'],'-struct','x');
 end

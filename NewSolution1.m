@@ -146,7 +146,7 @@ for QueryNumber=1:36
     %figure(2);
 end
 x.x=Errors;
-save(['Errors_Sol1','.mat'],'-struct','x');
+%save(['Errors_Sol1','.mat'],'-struct','x');
 disp('AvgError');
 AvgError=TotalError/36;
 disp(AvgError);

@@ -28,7 +28,7 @@ props.setProperty('mail.smtp.socketFactory.port','465');
 
 %sendmail(myaddress, 'Start of all work', 'Watch out');
 
-for SubjectNumber=0:9
+for SubjectNumber=7:9
     StoppingCriterion=StartingCriterion;
     % Extract feature and gaze position matrix, and save them
     [ TotalFeatureMatrix, TotalGazePositionMatrix] = ExtractMatricesFromSatoDataset( InputFileDir, [SaveDir,num2str(SubjectNumber)], SubjectNumber);
@@ -80,6 +80,8 @@ for SubjectNumber=0:9
     % Loop through all Stopping Criterion, calculate S, save intermediate
     % result of S and Error
     StartingS=eye(FeatureDimension);
+    %StartingS=load([SaveDir,num2str(SubjectNumber),'/','S-48-',sprintf('%g',1e-9),'_Epsilon-',sprintf('%g',StepSize),'.mat']);
+    %StartingS=StartingS.x;
     while StoppingCriterion>=EndingCrierion
         % Extract feature and gaze position matrix, and save them
         close all;
