@@ -67,6 +67,7 @@ disp(size(Errors));
 for lamda=0.036:0.001:0.036
     TotalError=0;
     OneLambdaErrors=zeros(25*5,1);
+    Estimations=zeros(2,25*5);
     for QueryNumber=1:25*5
         QueryFeature=TestingFeatureMatrix(:,QueryNumber);
         TrainingFeatureMatrix=FeatureMatrix;
@@ -134,6 +135,7 @@ for lamda=0.036:0.001:0.036
 %          end
         %% Calculate estimation from weight
         EstimatePosition=TrainingWeightMatrix*Newweight;
+        Estimations(:,QueryNumber)=EstimatePosition;
         TotalError=TotalError+norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber)));
         OneLambdaErrors(QueryNumber)=norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber)));
         %figure(2);
@@ -158,4 +160,6 @@ for lamda=0.036:0.001:0.036
 end
 fprintf('Best lambda[%4.3f] Best error[%8.6f]\n',BestLambda,BestError);
 x.x=BestErrors;
-save(['Errors_SplitTrainTest_Sol3_','.mat'],'-struct','x');
+%save(['Errors_SplitTrainTest_Sol3_','.mat'],'-struct','x');
+x.x=Estimations;
+save(['Estimations_SplitTrainTest_Sol3_','.mat'],'-struct','x');

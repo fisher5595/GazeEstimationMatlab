@@ -124,9 +124,10 @@ S=S.x;
 % figure(3);
 % AffinityMatrix3=DisplayAffinityMatrix(FeatureMatrix,0.5383,S);
 
-%S=eye(size(FeatureMatrix,1));
+S=eye(size(FeatureMatrix,1));
 TotalError=0;
 Errors=zeros(25*5,1);
+Estimations=zeros(2,25*5);
 for RoundNumber=1:5
     for QueryNumber=1:25
         QueryFeature=TestingFeatureMatrix(:,QueryNumber+(RoundNumber-1)*25);
@@ -162,6 +163,7 @@ for RoundNumber=1:5
         weight=weight./sum(weight);
     %     %Estimation for absolute gaze position
          EstimatePosition=TrainingWeightMatrix*weight;
+         Estimations(:,(RoundNumber-1)*25+QueryNumber)=EstimatePosition;
          TotalError=TotalError+norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber+(RoundNumber-1)*25)));
          Errors(QueryNumber+(RoundNumber-1)*25)=norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber+(RoundNumber-1)*25)));
     %    EstimateRelativePosition=TrainingWeightMatrix*weight;
@@ -175,4 +177,6 @@ disp('AvgError');
 AvgError=TotalError/25/5;
 disp(AvgError);
 x.x=Errors;
-save(['Errors_SplitTrainTest_Sol1_','.mat'],'-struct','x');
+%save(['Errors_SplitTrainTest_Sol1_','.mat'],'-struct','x');
+x.x=Estimations;
+save(['Estimations_SplitTrainTest_LLR_','.mat'],'-struct','x');

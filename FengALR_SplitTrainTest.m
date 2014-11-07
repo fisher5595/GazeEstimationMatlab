@@ -92,6 +92,7 @@ fprintf('EstimatedEpsilon[%11.8f]\n',EstimatedEpsilon);
 %% Do testing
 TotalError=0;
 Errors=double(zeros(25*5,1));
+Estimations=zeros(2,25*5);
 for QueryNumber=1:25*5
     QueryFeature=TestingFeatureMatrix(:,QueryNumber);
     TrainingFeatureMatrix=FeatureMatrix;
@@ -103,6 +104,7 @@ for QueryNumber=1:25*5
 
     %% Calculate estimation from weight
     EstimatePosition=TrainingPositionMatrix*Newweight;
+    Estimations(:,QueryNumber)=EstimatePosition;
     Errors(QueryNumber)=norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber)));
     TotalError=TotalError+norm(double(EstimatePosition)-double(TestingPositionMatrix(:,QueryNumber)));
     %figure(2);
@@ -111,4 +113,6 @@ AvgError=TotalError/25/5;
 disp('AvgError');
 disp(AvgError);
 x.x=Errors;
-save(['Errors_SplitTrainTest_ALR_','.mat'],'-struct','x');
+%save(['Errors_SplitTrainTest_ALR_','.mat'],'-struct','x');
+x.x=Estimations;
+save(['Estimations_SplitTrainTest_ALR_','.mat'],'-struct','x');

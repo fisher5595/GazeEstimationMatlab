@@ -65,6 +65,8 @@ for i=1:NumOfQuery
 end
 
 x.x=Errors;
-save(['Errors_SplitTrainTest_SVR_','.mat'],'-struct','x');
+%save(['Errors_SplitTrainTest_SVR_','.mat'],'-struct','x');
+x.x=PredictedGaze;
+save(['Estimations_SplitTrainTest_SVR_','.mat'],'-struct','x');
 AvgError=TotalError/NumOfQuery;
 fprintf('EstimatedC[%d] AvgError[%8.4f]\n', SVR_C, AvgError);
